@@ -5,17 +5,17 @@
 | 번호  | 기능         | Method  | URL                            | request         | response     | 
 |-----|------------|---------|--------------------------------|-----------------|--------------|
 | 1   | 일정 생성      | POST    | /api/schedule                  | 요청 body         | 일정 등록 정보     |
-| 2   | 전체 일정 조회   | GET     | /api/schedule/{userId}         | Path            | 일정 목록        |
+| 2   | 전체 일정 조회   | GET     | /api/schedule/{user_id}         | Path            | 일정 목록        |
 | 3   | 선택 일정 조회   | GET     | /api/schedule/{scheduleId}     | Path            | 단일 일정 정보     |
 | 4   | 선택 일정 수정   | PUT     | /api/schedule/{scheduleId}     | Path + Body     | 수정된 일정 정보    |
 | 5   | 선택 일정 삭제   | DELETE  | /api/schedule/{scheduleId}     | Path + Body     | 삭제 성공 메시지    |
-| 6   | 아이디 중복 확인  | GET     | /api/users/exists/{userId}     | Path            | 사용 가능 여부     |
-| 7   | 사용자 조회     | GET     | /api/users/{userId}            | Path            | 사용자 정보       |
+| 6   | 아이디 중복 확인  | GET     | /api/users/exists/{user_id}     | Path            | 사용 가능 여부     |
+| 7   | 사용자 조회     | GET     | /api/users/{user_id}            | Path            | 사용자 정보       |
 | 8   | 사용자 추가     | POST    | /api/users                     | Body            | 등록된 사용자 정보   |
-| 9   | 사용자 정보 수정  | PUT     | /api/users/{userId}            | Path + Body     | 수정된 사용자 정보   |
-| 10  | 사용자 삭제     | DELETE  | /api/users/{userId}            | Path + Body     | 삭제 성공 메시지    |
+| 9   | 사용자 정보 수정  | PUT     | /api/users/{user_id}            | Path + Body     | 수정된 사용자 정보   |
+| 10  | 사용자 삭제     | DELETE  | /api/users/{user_id}            | Path + Body     | 삭제 성공 메시지    |
 | 11  | 전체 사용자 조회  | GET     | /api/users                     | -               | 사용자 목록       |
-| 12  | 비밀번호 검증    | POST    | /api/users/verifyPass/{userId} | Path + Body     | 비밀번호 검증 메시지  |         
+| 12  | 비밀번호 검증    | POST    | /api/users/verifyPass/{user_id} | Path + Body     | 비밀번호 검증 메시지  |         
 
 <br>
 
@@ -38,7 +38,7 @@
 {
     "title": "일정 제목",
     "content": "일정 내용",
-    "userId": "유저 아이디",
+    "user_id": "유저 아이디",
     "password": "비밀번호"
 }
 ```
@@ -49,7 +49,7 @@
     "id": 1,
     "title": "일정 제목",
     "content": "일정 내용",
-    "userId": "유저 아이디",
+    "user_id": "유저 아이디",
     "createDate": "작성 날짜(YYYY-MM-DD)",
     "updateDate": "수정 날짜(YYYY-MM-DD)"
 }
@@ -58,13 +58,13 @@
 
 ---
 ### 2. 전체 일정 조회
-#### GET /api/schedule/{userId}
+#### GET /api/schedule/{user_id}
 - 전체 일정 조회
 
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------|-------------------|-------------|-----------|
-| userId    | Required          | 유저 아이디      | String    |
+| user_id    | Required          | 유저 아이디      | String    |
 
 
 #### 🔹 Response Body
@@ -75,7 +75,7 @@
             "id": "일정 고유번호",
             "title": "일정 제목",
             "content": "일정 내용",
-            "userId": "유저 아이디",
+            "user_id": "유저 아이디",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         },
@@ -83,7 +83,7 @@
             "id": "일정 고유번호",
             "title": "일정 제목",
             "content": "일정 내용",
-            "userId": "유저 아이디",
+            "user_id": "유저 아이디",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         },
@@ -112,7 +112,7 @@
             "id": "일정 고유번호",
             "title": "일정 제목",
             "content": "일정 내용",
-            "userId": "유저 아이디",
+            "user_id": "유저 아이디",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         }
@@ -150,7 +150,7 @@
             "id": 1,
             "title": "일정 제목",
             "content": "일정 내용",
-            "userId": "유저 아이디",
+            "user_id": "유저 아이디",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         }
@@ -187,12 +187,12 @@
 ---
 ### 6. 아이디 중복 확인
 - 아이디 중복 확인
-#### GET /api/users/exists/{userId}
+#### GET /api/users/exists/{user_id}
 
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description  | Data Type |
 |-----------|-------------------|--------------|-----------|
-| userID    | Required          | 유저 아이디       | String    |
+| user_id    | Required          | 유저 아이디       | String    |
 
 
 #### 🔹 Response Body
@@ -208,12 +208,12 @@
 ### 7. 사용자 조회
 - 사용자 조회
 
-#### GET /api/users/{userId}
+#### GET /api/users/{user_id}
 
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------|-------------------|-------------|-----------|
-| userID    | Required          | 유저 아이디      | String    |
+| user_id    | Required          | 유저 아이디      | String    |
 
 
 #### 🔹 Response Body
@@ -221,7 +221,7 @@
 {
   "data": {
     "id": 1,
-    "userId": "사용자 아이디",
+    "user_id": "사용자 아이디",
     "createDate": "2025-05-07",
     "updateDate": "2025-05-07"
   }
@@ -239,7 +239,7 @@
 #### 🔹 Request Body
 ```
 {
-    "userId": "사용자 아이디",
+    "user_id": "사용자 아이디",
     "email": "이메일"
 }
 ```
@@ -248,7 +248,7 @@
 ```
 {
   "id": 1,
-  "userId": "사용자 아이디",
+  "user_id": "사용자 아이디",
   "createDate": "2025-05-07",
   "updateDate": "2025-05-07"
 }
@@ -262,12 +262,12 @@
 ### 9. 사용자 정보 수정
 - 사용자 정보 수정
 
-#### PUT /api/users/{userId}
+#### PUT /api/users/{user_id}
 
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------|-------------------|-------------|-----------|
-| userID    | Required          | 사용자 아이디     | String    |
+| user_id    | Required          | 사용자 아이디     | String    |
 
 #### 🔹 Request Body
 ```
@@ -281,7 +281,7 @@
 ```
 {
   "id": 1,
-  "userId": "사용자 아이디",
+  "user_id": "사용자 아이디",
   "createDate": "2025-05-07",
   "updateDate": "2025-05-07"
 }
@@ -293,12 +293,12 @@
 ### 10. 사용자 삭제
 - 사용자 삭제
 
-#### DELETE /api/users/{userId}
+#### DELETE /api/users/{user_id}
 
 #### 🔹 Path Parameter
 | Parameter  | Required/Optional | Description | Data Type |
 |------------| --- |-------------|-----------|
-| userId | Required | 유저 아이디      | String    |
+| user_id | Required | 유저 아이디      | String    |
 
 #### 🔹 Request Body
 ```
@@ -327,13 +327,13 @@
     "data" : [
         {
             "id": 1
-            "userId": "유저 아이디",
+            "user_id": "유저 아이디",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         },
         {
             "id": 2
-            "userId": "유저 아이디",
+            "user_id": "유저 아이디",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         },
@@ -348,12 +348,12 @@
 ### 12. 비밀번호 검증
 -  비밀번호 검증
 
-#### POST /api/users/verifyPass/{userId}
+#### POST /api/users/verifyPass/{user_id}
 
 #### 🔹 Path Parameter
 | Parameter  | Required/Optional | Description | Data Type |
 |------------| --- |-------------|-----------|
-| userId | Required | 유저 아이디      | String    |
+| user_id | Required | 유저 아이디      | String    |
 
 #### 🔹 Request Body
 ```
@@ -369,3 +369,12 @@
   "message": "비밀번호가 일치하지 않습니다."
 }
 ```
+
+<br>
+
+---
+## ERD
+![Image](https://github.com/user-attachments/assets/0ea0721d-ca23-4212-9ef9-fd4745c21588)
+
+
+
