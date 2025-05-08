@@ -16,8 +16,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
     // MySQL
-    implementation 'mysql:mysql-connector-java:8.3.0'
+    implementation 'mysql:mysql-connector-java:8.0.33'
     // JDBC Template
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     runtimeOnly 'com.mysql:mysql-connector-j'
