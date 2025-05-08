@@ -10,9 +10,11 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcTemplateScheduleRepository implements ScheduleRepository {
@@ -32,7 +34,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("user_id", schedule.getUserId());
         parameters.put("title", schedule.getTitle());
-        parameters.put("content", schedule.getContents());
+        parameters.put("contents", schedule.getContents());
         parameters.put("createDate", schedule.getCreateDate());
         parameters.put("updateDate", schedule.getUpdateDate());
 
@@ -51,17 +53,31 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules() {
-        return jdbcTemplate.query("select * from schedule", scheduleRowMapper());
+        return jdbcTemplate.query("select * from schedule ORDER BY updateDate DESC", scheduleRowMapper());
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(int user_id) {
-        return jdbcTemplate.query("select * where user_id == " + user_id + " from schedule", scheduleRowMapper());
+        String sql = "SELECT * FROM schedule WHERE user_id = ? ORDER BY updateDate DESC";
+        return jdbcTemplate.query(sql, scheduleRowMapper(), user_id);
     }
 
     @Override
-    public ScheduleResponseDto findOneSchedule(int schedule_id) {
-        return null;
+    public List<ScheduleResponseDto> findAllSchedules(LocalDateTime updateDate) {
+        String sql = "SELECT * FROM schedule WHERE updateDate >= ? ORDER BY updateDate DESC";
+        return jdbcTemplate.query(sql, scheduleRowMapper(), updateDate);
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime updateDate) {
+        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND user_id = ? ORDER BY updateDate DESC";
+        return jdbcTemplate.query(sql, scheduleRowMapper(), updateDate, user_id);
+    }
+
+    @Override
+    public Optional<ScheduleResponseDto> findOneSchedule(int schedule_id) {
+        String sql = "SELECT * FROM schedule WHERE schedule_id = ?";
+        return jdbcTemplate.query(sql, scheduleRowMapper(), schedule_id).stream().findAny();
     }
 
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
@@ -73,8 +89,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
                         rs.getInt("user_id"),
                         rs.getString("title"),
                         rs.getString("contents"),
-                        rs.getDate("createDate").toLocalDate(),
-                        rs.getDate("updateDate").toLocalDate()
+                        rs.getTimestamp("createDate").toLocalDateTime(),
+                        rs.getTimestamp("updateDate").toLocalDateTime()
                 );
             }
 

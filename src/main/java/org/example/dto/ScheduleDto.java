@@ -3,7 +3,7 @@ package org.example.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.entity.Schedule;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -12,8 +12,8 @@ public class ScheduleDto {
     private int user_id;
     private String title;
     private String contents;
-    private LocalDate createDate;
-    private LocalDate updateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
 
     public ScheduleDto(Schedule schedule){
         this.schedule_id = schedule.getScheduleId();

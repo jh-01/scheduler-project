@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.example.entity.Schedule;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -13,6 +13,6 @@ public class ScheduleResponseDto {
     private int user_id;
     private String title;
     private String contents;
-    private LocalDate createDate;
-    private LocalDate updateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
 }

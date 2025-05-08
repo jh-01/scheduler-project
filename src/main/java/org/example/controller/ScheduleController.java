@@ -6,9 +6,12 @@ import org.example.dto.ScheduleResponseDto;
 import org.example.entity.Schedule;
 import org.example.repository.JdbcTemplateScheduleRepository;
 import org.example.service.ScheduleService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -28,12 +31,25 @@ public class ScheduleController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedule (@RequestParam int user_id) {
-        return null;
+    public ResponseEntity<List<ScheduleResponseDto>> findAllSchedule(
+            @RequestParam(required = false) Integer user_id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updateDate
+    ) {
+        if (user_id != null && updateDate != null) {
+            // 두 조건 다 있을 때
+            return ResponseEntity.ok(scheduleService.findAllSchedule(user_id, updateDate));
+        } else if (user_id != null) {
+            return ResponseEntity.ok(scheduleService.findAllSchedule(user_id));
+        } else if (updateDate != null) {
+            return ResponseEntity.ok(scheduleService.findAllSchedule(updateDate));
+        } else {
+            return ResponseEntity.ok(scheduleService.findAllSchedule());
+        }
     }
 
-    @GetMapping("/{schedule_id}")
+
+    @GetMapping("/one")
     public ResponseEntity<ScheduleResponseDto> findOneSchedule(@RequestParam int schedule_id){
-        return null;
+        return new ResponseEntity<>(scheduleService.findOnseSchedule(schedule_id), HttpStatus.CREATED);
     }
 }
