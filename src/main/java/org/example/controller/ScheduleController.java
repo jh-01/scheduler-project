@@ -1,10 +1,9 @@
 package org.example.controller;
 
-import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
+import org.example.dto.MessageResponseDto;
+import org.example.dto.ModifyScheduleDto;
 import org.example.dto.ScheduleRequestDto;
 import org.example.dto.ScheduleResponseDto;
-import org.example.entity.Schedule;
-import org.example.repository.JdbcTemplateScheduleRepository;
 import org.example.service.ScheduleService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -53,6 +52,24 @@ public class ScheduleController {
     // 일정 하나 조회
     @GetMapping("/one")
     public ResponseEntity<ScheduleResponseDto> findOneSchedule(@RequestParam int schedule_id){
-        return new ResponseEntity<>(scheduleService.findOnseSchedule(schedule_id), HttpStatus.CREATED);
+        return new ResponseEntity<>(scheduleService.findOneSchedule(schedule_id), HttpStatus.FOUND);
+    }
+
+    // 일정 수정
+    @PutMapping("/modify")
+    public ResponseEntity<ScheduleResponseDto> modifySchedule(
+            @RequestParam int schedule_id,
+            @RequestBody ModifyScheduleDto modifyScheduleDto
+    ){
+        return ResponseEntity.ok(scheduleService.modifySchedule(schedule_id, modifyScheduleDto));
+    }
+
+    // 일정 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<MessageResponseDto> deleteSchedule(
+            @RequestParam int schedule_id,
+            @RequestBody String password
+    ) {
+        return ResponseEntity.ok(scheduleService.deleteSchedule(schedule_id, password));
     }
 }

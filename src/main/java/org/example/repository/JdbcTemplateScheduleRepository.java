@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import org.example.dto.ModifyScheduleDto;
 import org.example.dto.ScheduleResponseDto;
 import org.example.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -80,6 +81,25 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return jdbcTemplate.query(sql, scheduleRowMapper(), schedule_id).stream().findAny();
     }
 
+    @Override
+    public Optional<ScheduleResponseDto> modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
+        String sql = "UPDATE schedule SET title = ?, contents = ?, updateDate = ? WHERE schedule_id = ?";
+        jdbcTemplate.update(sql,
+                modifyScheduleDto.getScheduleData().getTitle(),
+                modifyScheduleDto.getScheduleData().getContents(),
+                LocalDateTime.now(),
+                schedule_id
+        );
+        return findOneSchedule(schedule_id);
+    }
+
+    @Override
+    public boolean deleteSchedule(int schedule_id) {
+        String sql = "DELETE FROM schedule WHERE schedule_id = ?";
+        int sqlResult = jdbcTemplate.update(sql, schedule_id);
+        return sqlResult > 0;
+    }
+
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
         return new RowMapper<ScheduleResponseDto>() {
             @Override
@@ -93,8 +113,6 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
                         rs.getTimestamp("updateDate").toLocalDateTime()
                 );
             }
-
         };
     }
-
 }

@@ -1,5 +1,7 @@
 package org.example.service;
 
+import org.example.dto.MessageResponseDto;
+import org.example.dto.ModifyScheduleDto;
 import org.example.dto.ScheduleRequestDto;
 import org.example.dto.ScheduleResponseDto;
 import org.example.entity.Schedule;
@@ -11,11 +13,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService{
-    private ScheduleRepository scheduleRepository;
+    private final ScheduleRepository scheduleRepository;
 
     public ScheduleServiceImpl(JdbcTemplateScheduleRepository scheduleRepository){
         this.scheduleRepository = scheduleRepository;
@@ -59,9 +62,32 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public ScheduleResponseDto findOnseSchedule(int schedule_id) {
+    public ScheduleResponseDto findOneSchedule(int schedule_id) {
         Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.findOneSchedule(schedule_id);
         if(scheduleResponseDto.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다.");
         return scheduleResponseDto.get();
+    }
+
+    @Override
+    public ScheduleResponseDto modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
+        ScheduleResponseDto tempSchedule = findOneSchedule (schedule_id);
+
+        // 비밀번호 처리 -> 유저 테이블 기능 만든 후에..
+
+        // 비어있는 항목이 있을 경우 기존의 값을 유지하도록 처리
+        if(Objects.equals(modifyScheduleDto.getScheduleData().getTitle(), "")) modifyScheduleDto.getScheduleData().setTitle(tempSchedule.getTitle());
+        if(Objects.equals(modifyScheduleDto.getScheduleData().getContents(), "")) modifyScheduleDto.getScheduleData().setContents(tempSchedule.getContents());
+
+        Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.modifySchedule(schedule_id, modifyScheduleDto);
+        if(scheduleResponseDto.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다.");
+        return scheduleResponseDto.get();
+    }
+
+    @Override
+    public MessageResponseDto deleteSchedule(int schedule_id, String password) {
+        // 비밀번호 처리 -> 유저 테이블 기능 만든 후에..
+
+        if(!scheduleRepository.deleteSchedule(schedule_id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다.");
+        return new MessageResponseDto("삭제 완료");
     }
 }
