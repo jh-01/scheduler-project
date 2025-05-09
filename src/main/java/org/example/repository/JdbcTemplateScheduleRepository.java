@@ -63,15 +63,15 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedules(LocalDateTime updateDate) {
-        String sql = "SELECT * FROM schedule WHERE updateDate >= ? ORDER BY updateDate DESC";
-        return jdbcTemplate.query(sql, scheduleRowMapper(), updateDate);
+    public List<ScheduleResponseDto> findAllSchedules(LocalDateTime since, LocalDateTime until) {
+        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND updateDate <= ? ORDER BY updateDate DESC";
+        return jdbcTemplate.query(sql, scheduleRowMapper(), since, until);
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime updateDate) {
-        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND user_id = ? ORDER BY updateDate DESC";
-        return jdbcTemplate.query(sql, scheduleRowMapper(), updateDate, user_id);
+    public List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime since, LocalDateTime until) {
+        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND updateDate <= ?  AND user_id = ? ORDER BY updateDate DESC";
+        return jdbcTemplate.query(sql, scheduleRowMapper(), since, until, user_id);
     }
 
     @Override

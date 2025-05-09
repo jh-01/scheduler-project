@@ -49,13 +49,13 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedule(LocalDateTime localDateTime) {
-        return scheduleRepository.findAllSchedules(localDateTime);
+    public List<ScheduleResponseDto> findAllSchedule(LocalDateTime since, LocalDateTime until) {
+        return scheduleRepository.findAllSchedules(since, until);
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedule(int user_id, LocalDateTime localDateTime) {
-        return scheduleRepository.findAllSchedules(user_id, localDateTime);
+    public List<ScheduleResponseDto> findAllSchedule(int user_id, LocalDateTime since, LocalDateTime until) {
+        return scheduleRepository.findAllSchedules(user_id, since, until);
     }
 
     @Override

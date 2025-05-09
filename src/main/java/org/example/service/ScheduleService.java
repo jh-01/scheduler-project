@@ -15,9 +15,9 @@ public interface ScheduleService {
 
     List<ScheduleResponseDto> findAllSchedule(int user_id);
 
-    List<ScheduleResponseDto> findAllSchedule(LocalDateTime localDateTime);
+    List<ScheduleResponseDto> findAllSchedule(LocalDateTime since, LocalDateTime until);
 
-    List<ScheduleResponseDto> findAllSchedule(int user_id, LocalDateTime localDateTime);
+    List<ScheduleResponseDto> findAllSchedule(int user_id, LocalDateTime since, LocalDateTime until);
 
     ScheduleResponseDto findOnseSchedule(int schedule_id);
 }

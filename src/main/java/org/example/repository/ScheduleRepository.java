@@ -14,9 +14,9 @@ public interface ScheduleRepository {
     List<ScheduleResponseDto> findAllSchedules();
     List<ScheduleResponseDto> findAllSchedules(int user_id);
 
-    List<ScheduleResponseDto> findAllSchedules(LocalDateTime updateDate);
+    List<ScheduleResponseDto> findAllSchedules(LocalDateTime since, LocalDateTime until);
 
-    List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime updateDate);
+    List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime since, LocalDateTime until);
 
     Optional<ScheduleResponseDto> findOneSchedule(int schedule_id);
 }
