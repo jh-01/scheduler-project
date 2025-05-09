@@ -62,10 +62,11 @@
 - 전체 일정 조회
 
 #### 🔹 Path Parameter
-| Parameter | Required/Optional | Description | Data Type |
-|-----------|-------------------|-------------|-----------|
-| user_id    | Required          | 유저 아이디      | String    |
-
+| Parameter | Required/Optional | Description  | Data Type     |
+|-----------|-------------------|--------------|---------------|
+| user_id   | Optional          | 유저 아이디       | String        |
+| since     | Optional          | 기간의 시작       | LocalDateTime |
+| until     | Optional          | 기간의 끝        | LocalDateTime |
 
 #### 🔹 Response Body
 ```
