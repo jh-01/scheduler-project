@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ScheduleRequestDto {
-    private int userId;
-    private String title;
-    private String contents;
+public class UserRequestDto {
+    private String loginId;
+    private String email;
+    private String nickname;
     private String password;
 }

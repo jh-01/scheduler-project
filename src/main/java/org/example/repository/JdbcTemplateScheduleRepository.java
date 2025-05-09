@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.dto.ModifyScheduleDto;
+import org.example.dto.ScheduleRequestDto;
 import org.example.dto.ScheduleResponseDto;
 import org.example.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.Integer.parseInt;
+
 @Repository
 public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
@@ -27,29 +30,23 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public ScheduleResponseDto saveSchedule(Schedule schedule) {
+    public Optional<ScheduleResponseDto> saveSchedule(ScheduleRequestDto schedule) {
+        LocalDateTime nowDateTime = LocalDateTime.now();
         // 문자열을 작성하지 않고 insert 가능
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("schedule_id");
+        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("scheduleId");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("user_id", schedule.getUserId());
+        parameters.put("userId", schedule.getUserId());
         parameters.put("title", schedule.getTitle());
         parameters.put("contents", schedule.getContents());
-        parameters.put("createDate", schedule.getCreateDate());
-        parameters.put("updateDate", schedule.getUpdateDate());
+        parameters.put("createDate", nowDateTime);
+        parameters.put("updateDate", nowDateTime);
 
         // 식별자 auto increment
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
-        return new ScheduleResponseDto(
-                key.intValue(),
-                schedule.getUserId(),
-                schedule.getTitle(),
-                schedule.getContents(),
-                schedule.getCreateDate(),
-                schedule.getUpdateDate()
-        );
+        return findOneSchedule(parseInt(key.toString()));
     }
 
     @Override
@@ -59,7 +56,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(int user_id) {
-        String sql = "SELECT * FROM schedule WHERE user_id = ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM schedule WHERE userId = ? ORDER BY updateDate DESC";
         return jdbcTemplate.query(sql, scheduleRowMapper(), user_id);
     }
 
@@ -71,19 +68,19 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime since, LocalDateTime until) {
-        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND updateDate <= ?  AND user_id = ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND updateDate <= ?  AND userId = ? ORDER BY updateDate DESC";
         return jdbcTemplate.query(sql, scheduleRowMapper(), since, until, user_id);
     }
 
     @Override
     public Optional<ScheduleResponseDto> findOneSchedule(int schedule_id) {
-        String sql = "SELECT * FROM schedule WHERE schedule_id = ?";
+        String sql = "SELECT * FROM schedule WHERE scheduleId = ?";
         return jdbcTemplate.query(sql, scheduleRowMapper(), schedule_id).stream().findAny();
     }
 
     @Override
     public Optional<ScheduleResponseDto> modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
-        String sql = "UPDATE schedule SET title = ?, contents = ?, updateDate = ? WHERE schedule_id = ?";
+        String sql = "UPDATE schedule SET title = ?, contents = ?, updateDate = ? WHERE scheduleId = ?";
         jdbcTemplate.update(sql,
                 modifyScheduleDto.getScheduleData().getTitle(),
                 modifyScheduleDto.getScheduleData().getContents(),
@@ -95,7 +92,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public boolean deleteSchedule(int schedule_id) {
-        String sql = "DELETE FROM schedule WHERE schedule_id = ?";
+        String sql = "DELETE FROM schedule WHERE scheduleId = ?";
         int sqlResult = jdbcTemplate.update(sql, schedule_id);
         return sqlResult > 0;
     }
@@ -105,8 +102,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
             @Override
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new ScheduleResponseDto(
-                        rs.getInt("schedule_id"),
-                        rs.getInt("user_id"),
+                        rs.getInt("scheduleId"),
+                        rs.getInt("userId"),
                         rs.getString("title"),
                         rs.getString("contents"),
                         rs.getTimestamp("createDate").toLocalDateTime(),

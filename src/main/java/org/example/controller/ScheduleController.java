@@ -33,15 +33,15 @@ public class ScheduleController {
     // 모든 일정 조회
     @GetMapping("/all")
     public ResponseEntity<List<ScheduleResponseDto>> findAllSchedule(
-            @RequestParam(required = false) Integer user_id,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime since,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime until
     ) {
-        if (user_id != null && since != null && until != null) {
+        if (userId != null && since != null && until != null) {
             // 두 조건 다 있을 때
-            return ResponseEntity.ok(scheduleService.findAllSchedule(user_id, since, until));
-        } else if (user_id != null) {
-            return ResponseEntity.ok(scheduleService.findAllSchedule(user_id));
+            return ResponseEntity.ok(scheduleService.findAllSchedule(userId, since, until));
+        } else if (userId != null) {
+            return ResponseEntity.ok(scheduleService.findAllSchedule(userId));
         } else if (since != null && until != null) {
             return ResponseEntity.ok(scheduleService.findAllSchedule(since, until));
         } else {
@@ -51,25 +51,25 @@ public class ScheduleController {
 
     // 일정 하나 조회
     @GetMapping("/one")
-    public ResponseEntity<ScheduleResponseDto> findOneSchedule(@RequestParam int schedule_id){
-        return new ResponseEntity<>(scheduleService.findOneSchedule(schedule_id), HttpStatus.FOUND);
+    public ResponseEntity<ScheduleResponseDto> findOneSchedule(@RequestParam int scheduleId){
+        return new ResponseEntity<>(scheduleService.findOneSchedule(scheduleId), HttpStatus.FOUND);
     }
 
     // 일정 수정
     @PutMapping("/modify")
     public ResponseEntity<ScheduleResponseDto> modifySchedule(
-            @RequestParam int schedule_id,
+            @RequestParam int scheduleId,
             @RequestBody ModifyScheduleDto modifyScheduleDto
     ){
-        return ResponseEntity.ok(scheduleService.modifySchedule(schedule_id, modifyScheduleDto));
+        return ResponseEntity.ok(scheduleService.modifySchedule(scheduleId, modifyScheduleDto));
     }
 
     // 일정 삭제
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponseDto> deleteSchedule(
-            @RequestParam int schedule_id,
+            @RequestParam int scheduleId,
             @RequestBody String password
     ) {
-        return ResponseEntity.ok(scheduleService.deleteSchedule(schedule_id, password));
+        return ResponseEntity.ok(scheduleService.deleteSchedule(scheduleId, password));
     }
 }

@@ -1,18 +1,18 @@
-package org.example.dto;
+package org.example.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.entity.Schedule;
 
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class ScheduleResponseDto {
-    private int scheduleId;
+public class User {
     private int userId;
-    private String title;
-    private String contents;
+    private String loginId;
+    private String email;
+    private String nickname;
+    private String password;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
 }

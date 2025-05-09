@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.dto.ModifyScheduleDto;
+import org.example.dto.ScheduleRequestDto;
 import org.example.dto.ScheduleResponseDto;
 import org.example.entity.Schedule;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface ScheduleRepository {
-    ScheduleResponseDto saveSchedule(Schedule schedule);
+    Optional<ScheduleResponseDto> saveSchedule(ScheduleRequestDto schedule);
     List<ScheduleResponseDto> findAllSchedules();
     List<ScheduleResponseDto> findAllSchedules(int user_id);
     List<ScheduleResponseDto> findAllSchedules(LocalDateTime since, LocalDateTime until);

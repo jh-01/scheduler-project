@@ -26,19 +26,9 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto scheduleRequestDto){
-        List<ScheduleResponseDto> scheduleResponseDtoList = scheduleRepository.findAllSchedules();
-        int newId = scheduleResponseDtoList.size() + 1;
-
-        LocalDateTime nowDate = LocalDateTime.now();
-        return scheduleRepository.saveSchedule(
-                new Schedule(
-                        newId,
-                        scheduleRequestDto.getUser_id(),
-                        scheduleRequestDto.getTitle(),
-                        scheduleRequestDto.getContents(),
-                        nowDate,
-                        nowDate
-                ));
+        Optional<ScheduleResponseDto> newSchedule = scheduleRepository.saveSchedule(scheduleRequestDto);
+        if(newSchedule.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일정 생성에 오류가 발생했습니다.");
+        return newSchedule.get();
     }
 
     @Override
@@ -75,6 +65,7 @@ public class ScheduleServiceImpl implements ScheduleService{
         // 비밀번호 처리 -> 유저 테이블 기능 만든 후에..
 
         // 비어있는 항목이 있을 경우 기존의 값을 유지하도록 처리
+        // 근데 이건 프론트단에서 처리해야 하는거 아닌가...? 제목과 내용은 비어있을 수 없습니다 같이...
         if(Objects.equals(modifyScheduleDto.getScheduleData().getTitle(), "")) modifyScheduleDto.getScheduleData().setTitle(tempSchedule.getTitle());
         if(Objects.equals(modifyScheduleDto.getScheduleData().getContents(), "")) modifyScheduleDto.getScheduleData().setContents(tempSchedule.getContents());
 

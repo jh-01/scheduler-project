@@ -2,20 +2,22 @@
 
 ---
 ## 🔧 API 목록
-| 번호 | 기능        | Method | URL                             | request     | response    | 
-|----|-----------|--------|---------------------------------|-------------|-------------|
-| 1  | 일정 생성     | POST   | /api/schedule                   | 요청 body     | 일정 등록 정보    |
-| 2  | 전체 일정 조회  | GET    | /api/schedule/{user_id}         | Path        | 일정 목록       |
-| 3  | 선택 일정 조회  | GET    | /api/schedule/{scheduleId}      | Path        | 단일 일정 정보    |
-| 4  | 선택 일정 수정  | PUT    | /api/schedule/{scheduleId}      | Path + Body | 수정된 일정 정보   |
-| 5  | 선택 일정 삭제  | DELETE | /api/schedule/{scheduleId}      | Path + Body | 삭제 성공 메시지   |
-| 6  | 아이디 중복 확인 | GET    | /api/users/exists/{user_id}     | Path        | 사용 가능 여부    |
-| 7  | 사용자 조회    | GET    | /api/users/{user_id}            | Path        | 사용자 정보      |
-| 8  | 사용자 추가    | POST   | /api/users                      | Body        | 등록된 사용자 정보  |
-| 9  | 사용자 정보 수정 | PUT    | /api/users/{user_id}            | Path + Body | 수정된 사용자 정보  |
-| 10 | 사용자 삭제    | DELETE | /api/users/{user_id}            | Path + Body | 삭제 성공 메시지   |
-| 11 | 전체 사용자 조회 | GET    | /api/users                      | -           | 사용자 목록      |
-| 12 | 비밀번호 검증   | POST   | /api/users/verifyPass/{user_id} | Path + Body | 비밀번호 검증 메시지 |         
+| 번호 | 기능          | Method | URL                                  | request     | response    | 
+|----|-------------|--------|--------------------------------------|-------------|-------------|
+| 1  | 일정 생성       | POST   | /api/schedule                        | 요청 body     | 일정 등록 정보    |
+| 2  | 전체 일정 조회    | GET    | /api/schedule/{user_id}              | Path        | 일정 목록       |
+| 3  | 선택 일정 조회    | GET    | /api/schedule/{scheduleId}           | Path        | 단일 일정 정보    |
+| 4  | 선택 일정 수정    | PUT    | /api/schedule/modify/{scheduleId}    | Path + Body | 수정된 일정 정보   |
+| 5  | 선택 일정 삭제    | DELETE | /api/schedule/delete/{scheduleId}    | Path + Body | 삭제 성공 메시지   |
+| 6  | 아이디 중복 확인   | GET    | /api/users/exists/{user_id}          | Path        | 사용 가능 여부    |
+| 7  | 사용자 조회      | GET    | /api/users/{user_id}                 | Path        | 사용자 정보      |
+| 8  | 사용자 추가      | POST   | /api/users                           | Body        | 등록된 사용자 정보  |
+| 9  | 사용자 정보 수정   | PATCH    | /api/users/modify/info{user_id}      | Path + Body | 수정된 사용자 정보  |
+| 10 | 사용자 비밀번호 수정 | PATCH    | /api/users/modify/password/{user_id} | Path + Body | 수정된 사용자 정보  |
+| 11 | 사용자 아이디 수정  | PATCH    | /api/users/modify/login-id/{user_id}          | Path + Body | 수정된 사용자 정보  |
+| 12 | 사용자 삭제      | DELETE | /api/users/delete/{user_id}          | Path + Body | 삭제 성공 메시지   |
+| 13 | 전체 사용자 조회   | GET    | /api/users                           | -           | 사용자 목록      |
+| 14 | 비밀번호 검증     | POST   | /api/users/verifyPass/{user_id}      | Path + Body | 비밀번호 검증 메시지 |         
 
 <br>
 
@@ -183,12 +185,12 @@
 ---
 ### 6. 아이디 중복 확인
 - 아이디 중복 확인
-#### GET /api/users/exists/{login_id}
+#### GET /api/users/exists/{loginId}
 
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description  | Data Type |
 |-----------|-------------------|--------------|-----------|
-| login_id    | Required          | 유저 아이디       | String    |
+| loginId    | Required          | 유저 아이디       | String    |
 
 
 #### 🔹 Response Body
@@ -204,12 +206,12 @@
 ### 7. 사용자 조회
 - 사용자 조회
 
-#### GET /api/users/{login_id}
+#### GET /api/users/{loginId}
 
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------|-------------------|-------------|-----------|
-| login_id    | Required          | 유저 아이디      | String    |
+| loginId    | Required          | 유저 아이디      | String    |
 
 
 #### 🔹 Response Body
@@ -217,7 +219,9 @@
 {
   "data": {
     "user_id": 1,
-    "login_id": "사용자 아이디",
+    "loginId": "사용자 아이디",
+    "nickname": "닉네임",
+    "email": "이메일",
     "createDate": "2025-05-07",
     "updateDate": "2025-05-07"
   }
@@ -235,7 +239,8 @@
 #### 🔹 Request Body
 ```
 {
-    "login_id": "사용자 아이디",
+    "loginId": "사용자 아이디",
+    "nickname": "닉네임",
     "email": "이메일",
     "password" : "비밀번호"
 }
@@ -245,7 +250,9 @@
 ```
 {
   "user_id": 1,
-  "login_id": "사용자 아이디",
+  "loginId": "사용자 아이디",
+  "email": "이메일",
+  "nickname": "닉네임",
   "createDate": "2025-05-07",
   "updateDate": "2025-05-07"
 }
@@ -264,11 +271,12 @@
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------|-------------------|-------------|-----------|
-| login_id    | Required          | 사용자 아이디     | String    |
+| loginId    | Required          | 사용자 아이디     | String    |
 
 #### 🔹 Request Body
 ```
 {
+    "nickname": "닉네임",
     "email": "이메일",
     "password": "비밀번호"
 }
@@ -278,7 +286,9 @@
 ```
 {
   "user_id": 1,
-  "login_id": "사용자 아이디",
+  "loginId": "사용자 아이디",
+  "nickname": "닉네임",
+  "email": "이메일",
   "createDate": "2025-05-07",
   "updateDate": "2025-05-07"
 }
@@ -295,12 +305,12 @@
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------| --- |-------------|-----------|
-| login_id  | Required | 유저 아이디      | String    |
+| loginId  | Required | 유저 아이디      | String    |
 
 #### 🔹 Request Body
 ```
 {
-"password": "비밀번호"
+    "password": "비밀번호"
 }
 ```
 
@@ -324,13 +334,17 @@
     "data" : [
         {
             "user_id": 1
-            "login_id": "유저 아이디",
+            "loginId": "유저 아이디",
+            "nickname": "닉네임",
+            "email": "이메일",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         },
         {
             "user_id": 2
             "login_id": "유저 아이디",
+            "nickname": "닉네임",
+            "email": "이메일",
             "createDate": "작성 날짜(YYYY-MM-DD)",
             "updateDate": "수정 날짜(YYYY-MM-DD)"
         },
@@ -350,7 +364,7 @@
 #### 🔹 Path Parameter
 | Parameter | Required/Optional | Description | Data Type |
 |-----------| --- |-------------|-----------|
-| login_id  | Required | 유저 아이디      | String    |
+| loginId  | Required | 유저 아이디      | String    |
 
 #### 🔹 Request Body
 ```
