@@ -56,7 +56,7 @@ public class ScheduleController {
     }
 
     // 일정 수정
-    @PutMapping("/modify")
+    @PatchMapping("/modify")
     public ResponseEntity<ScheduleResponseDto> modifySchedule(
             @RequestParam int scheduleId,
             @RequestBody ModifyScheduleDto modifyScheduleDto

@@ -5,19 +5,19 @@
 | 번호 | 기능          | Method | URL                                  | request     | response    | 
 |----|-------------|--------|--------------------------------------|-------------|-------------|
 | 1  | 일정 생성       | POST   | /api/schedule                        | 요청 body     | 일정 등록 정보    |
-| 2  | 전체 일정 조회    | GET    | /api/schedule/{user_id}              | Path        | 일정 목록       |
+| 2  | 전체 일정 조회    | GET    | /api/schedule/{loginId}              | Path        | 일정 목록       |
 | 3  | 선택 일정 조회    | GET    | /api/schedule/{scheduleId}           | Path        | 단일 일정 정보    |
 | 4  | 선택 일정 수정    | PUT    | /api/schedule/modify/{scheduleId}    | Path + Body | 수정된 일정 정보   |
 | 5  | 선택 일정 삭제    | DELETE | /api/schedule/delete/{scheduleId}    | Path + Body | 삭제 성공 메시지   |
-| 6  | 아이디 중복 확인   | GET    | /api/users/exists/{user_id}          | Path        | 사용 가능 여부    |
-| 7  | 사용자 조회      | GET    | /api/users/{user_id}                 | Path        | 사용자 정보      |
+| 6  | 아이디 중복 확인   | GET    | /api/users/isDuplicate/{loginId}      | Path        | 사용 가능 여부    |
+| 7  | 사용자 조회      | GET    | /api/users/{loginId}                 | Path        | 사용자 정보      |
 | 8  | 사용자 추가      | POST   | /api/users                           | Body        | 등록된 사용자 정보  |
-| 9  | 사용자 정보 수정   | PATCH    | /api/users/modify/info{user_id}      | Path + Body | 수정된 사용자 정보  |
-| 10 | 사용자 비밀번호 수정 | PATCH    | /api/users/modify/password/{user_id} | Path + Body | 수정된 사용자 정보  |
-| 11 | 사용자 아이디 수정  | PATCH    | /api/users/modify/login-id/{user_id}          | Path + Body | 수정된 사용자 정보  |
-| 12 | 사용자 삭제      | DELETE | /api/users/delete/{user_id}          | Path + Body | 삭제 성공 메시지   |
+| 9  | 사용자 정보 수정   | PATCH    | /api/users/modify/info      | Body | 수정된 사용자 정보  |
+| 10 | 사용자 비밀번호 수정 | PATCH    | /api/users/modify/password | Body | 수정된 사용자 정보  |
+| 11 | 사용자 아이디 수정  | PATCH    | /api/users/modify/loginId  | Body | 수정된 사용자 정보  |
+| 12 | 사용자 삭제      | DELETE | /api/users/delete         | Body | 삭제 성공 메시지   |
 | 13 | 전체 사용자 조회   | GET    | /api/users                           | -           | 사용자 목록      |
-| 14 | 비밀번호 검증     | POST   | /api/users/verifyPass/{user_id}      | Path + Body | 비밀번호 검증 메시지 |         
+    
 
 <br>
 
@@ -60,7 +60,7 @@
 
 ---
 ### 2. 전체 일정 조회
-#### GET /api/schedule/{user_id}
+#### GET /api/schedule
 - 전체 일정 조회
 
 #### 🔹 Path Parameter
@@ -266,16 +266,12 @@
 ### 9. 사용자 정보 수정
 - 사용자 정보 수정
 
-#### PUT /api/users/{user_id}
-
-#### 🔹 Path Parameter
-| Parameter | Required/Optional | Description | Data Type |
-|-----------|-------------------|-------------|-----------|
-| loginId    | Required          | 사용자 아이디     | String    |
+#### PUT /api/users/modify/info
 
 #### 🔹 Request Body
 ```
 {
+    "loginId": "로그인 아이디",
     "nickname": "닉네임",
     "email": "이메일",
     "password": "비밀번호"
@@ -297,19 +293,16 @@
 
 ---
 
-### 10. 사용자 삭제
-- 사용자 삭제
+### 10. 사용자 아이디 수정
+- 사용자 아이디 수정
 
-#### DELETE /api/users/{user_id}
-
-#### 🔹 Path Parameter
-| Parameter | Required/Optional | Description | Data Type |
-|-----------| --- |-------------|-----------|
-| loginId  | Required | 유저 아이디      | String    |
+#### PUT /api/users/modify/loginId
 
 #### 🔹 Request Body
 ```
 {
+    "tempLoginId": "현재 로그인 아이디",
+    "newLoginId": "새 로그인 아이디",
     "password": "비밀번호"
 }
 ```
@@ -317,13 +310,65 @@
 #### 🔹 Response Body
 ```
 {
-    "message": "유저 삭제 성공"
+  "user_id": 1,
+  "loginId": "사용자 아이디",
+  "nickname": "닉네임",
+  "email": "이메일",
+  "createDate": "2025-05-07",
+  "updateDate": "2025-05-07"
 }
 ```
 <br>
 
 ---
-### 11. 전체 사용자 조회
+
+### 11. 사용자 비밀번호 수정
+- 사용자 비밀번호 수정
+
+#### PUT /api/users/modify/password
+
+#### 🔹 Request Body
+```
+{
+    "loginId": "닉네임",
+    "tempPassword": "현재 비밀번호",
+    "newPassword": "새 비밀번호"
+}
+```
+
+#### 🔹 Response Body
+```
+{
+  "message": "비밀번호가 성공적으로 수정되었습니다."
+}
+```
+<br>
+
+---
+
+### 12. 사용자 삭제
+- 사용자 삭제
+
+#### DELETE /api/users/delete
+
+#### 🔹 Request Body
+```
+{
+    "loginId": "로그인 아이디",
+    "password": "비밀번호"
+}
+```
+
+#### 🔹 Response Body
+```
+{
+    "message": "삭제 완료"
+}
+```
+<br>
+
+---
+### 13. 전체 사용자 조회
 -  전체 사용자 조회
 
 #### GET /api/users
@@ -353,34 +398,6 @@
 }
 ```
  
-<br>
-
----
-### 12. 비밀번호 검증
--  비밀번호 검증
-
-#### POST /api/users/verifyPass/{user_id}
-
-#### 🔹 Path Parameter
-| Parameter | Required/Optional | Description | Data Type |
-|-----------| --- |-------------|-----------|
-| loginId  | Required | 유저 아이디      | String    |
-
-#### 🔹 Request Body
-```
-{
-"password": "비밀번호"
-}
-```
-
-#### 🔹 Response Body
-```
-{
-  "valid": false,
-  "message": "비밀번호가 일치하지 않습니다."
-}
-```
-
 <br>
 
 ---

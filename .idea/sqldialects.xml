@@ -4,5 +4,6 @@
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/1a32a7af-b8b0-4ceb-b4a9-0c8b3a426d36/console_1.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/schedule.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/example/repository/JdbcTemplateScheduleRepository.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/org/example/repository/JdbcTemplateUserRepository.java" dialect="GenericSQL" />
   </component>
 </project>

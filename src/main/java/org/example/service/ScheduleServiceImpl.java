@@ -19,9 +19,11 @@ import java.util.Optional;
 @Service
 public class ScheduleServiceImpl implements ScheduleService{
     private final ScheduleRepository scheduleRepository;
+    private final UserServiceImpl userService;
 
-    public ScheduleServiceImpl(JdbcTemplateScheduleRepository scheduleRepository){
+    public ScheduleServiceImpl(JdbcTemplateScheduleRepository scheduleRepository, UserServiceImpl userService){
         this.scheduleRepository = scheduleRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -60,9 +62,11 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     public ScheduleResponseDto modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
+        // 해당 유저 찾기
         ScheduleResponseDto tempSchedule = findOneSchedule (schedule_id);
 
-        // 비밀번호 처리 -> 유저 테이블 기능 만든 후에..
+        // 비밀번호 검증
+        userService.validatePassword(modifyScheduleDto.getLoginId(), modifyScheduleDto.getPassword());
 
         // 비어있는 항목이 있을 경우 기존의 값을 유지하도록 처리
         // 근데 이건 프론트단에서 처리해야 하는거 아닌가...? 제목과 내용은 비어있을 수 없습니다 같이...

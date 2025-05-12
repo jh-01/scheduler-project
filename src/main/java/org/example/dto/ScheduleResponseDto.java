@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ScheduleResponseDto {
     private int scheduleId;
-    private int userId;
+    private String nickname;
     private String title;
     private String contents;
     private LocalDateTime createDate;

@@ -6,7 +6,6 @@ import org.example.entity.Schedule;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 public class ScheduleDto {
     private int scheduleId;
     private int userID;

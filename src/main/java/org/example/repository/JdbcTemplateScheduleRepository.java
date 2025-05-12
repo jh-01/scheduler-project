@@ -51,30 +51,30 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules() {
-        return jdbcTemplate.query("select * from schedule ORDER BY updateDate DESC", scheduleRowMapper());
+        return jdbcTemplate.query("select * from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC", scheduleRowMapper());
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(int user_id) {
-        String sql = "SELECT * FROM schedule WHERE userId = ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE userId = ? ORDER BY s.updateDate DESC";
         return jdbcTemplate.query(sql, scheduleRowMapper(), user_id);
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(LocalDateTime since, LocalDateTime until) {
-        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND updateDate <= ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE updateDate >= ? AND updateDate <= ? ORDER BY s.updateDate DESC";
         return jdbcTemplate.query(sql, scheduleRowMapper(), since, until);
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime since, LocalDateTime until) {
-        String sql = "SELECT * FROM schedule WHERE updateDate >= ? AND updateDate <= ?  AND userId = ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE updateDate >= ? AND updateDate <= ?  AND userId = ? ORDER BY s.updateDate DESC";
         return jdbcTemplate.query(sql, scheduleRowMapper(), since, until, user_id);
     }
 
     @Override
     public Optional<ScheduleResponseDto> findOneSchedule(int schedule_id) {
-        String sql = "SELECT * FROM schedule WHERE scheduleId = ?";
+        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE s.scheduleId = ?";
         return jdbcTemplate.query(sql, scheduleRowMapper(), schedule_id).stream().findAny();
     }
 
@@ -103,7 +103,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new ScheduleResponseDto(
                         rs.getInt("scheduleId"),
-                        rs.getInt("userId"),
+                        rs.getString("nickname"),
                         rs.getString("title"),
                         rs.getString("contents"),
                         rs.getTimestamp("createDate").toLocalDateTime(),

@@ -15,4 +15,8 @@ public class User {
     private String password;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+
+    public User(String password) {
+        this.password = password;
+    }
 }

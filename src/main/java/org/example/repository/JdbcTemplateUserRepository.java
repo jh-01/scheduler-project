@@ -1,22 +1,21 @@
 package org.example.repository;
 
-import org.example.dto.MessageResponseDto;
-import org.example.dto.UserRequestDto;
-import org.example.dto.UserResponseDto;
+import lombok.extern.slf4j.Slf4j;
+import org.example.dto.*;
+import org.example.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import static java.lang.Integer.parseInt;
 
+@Slf4j
 @Repository
 public class JdbcTemplateUserRepository implements UserRepository{
     private final JdbcTemplate jdbcTemplate;
@@ -84,12 +83,63 @@ public class JdbcTemplateUserRepository implements UserRepository{
     }
 
     @Override
-    public Optional<UserResponseDto> modifyUser() {
-        return Optional.empty();
+    public Optional<UserResponseDto> modifyUserLoginId(ModifyUserLoginIdDto modifyUserLoginIdDto) {
+        String sql = "UPDATE users SET loginId = ? WHERE loginId = ?";
+        jdbcTemplate.update(sql,
+                modifyUserLoginIdDto.getNewLoginId(),
+                modifyUserLoginIdDto.getTempLoginId());
+        return findUser(modifyUserLoginIdDto.getNewLoginId());
     }
 
     @Override
-    public Optional<MessageResponseDto> deleteUser() {
-        return Optional.empty();
+    public Optional<UserResponseDto> modifyUserInfo(ModifyUserInfoDto modifyUserInfoDto) {
+        String sql = "UPDATE users SET nickname = ?, email = ? WHERE loginId = ?";
+        jdbcTemplate.update(sql,
+                modifyUserInfoDto.getNickname(),
+                modifyUserInfoDto.getEmail(),
+                modifyUserInfoDto.getLoginId());
+        return findUser(modifyUserInfoDto.getLoginId());
     }
+
+    @Override
+    public Optional<UserResponseDto> modifyUserPassword(ModifyUserPasswordDto modifyUserPasswordDto) {
+        String sql = "UPDATE users SET password = ? WHERE loginId = ?";
+        jdbcTemplate.update(sql,
+                modifyUserPasswordDto.getNewPassword(),
+                modifyUserPasswordDto.getLoginId());
+        return findUser(modifyUserPasswordDto.getLoginId());
+    }
+
+    @Override
+    public boolean existsByLoginId(String loginId) {
+        String sql = "SELECT exists(SELECT * FROM users WHERE loginId = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, loginId));
+    }
+
+    @Override
+    public boolean validatePassword(String loginId, String password) {
+        String sql = "SELECT password FROM users WHERE loginId = ?";
+        List<User> user = jdbcTemplate.query(sql, userPasswordRowMapper(), loginId);
+        if (user.isEmpty()) return false;
+        return user.get(0).getPassword().equals(password);
+    }
+
+    @Override
+    public boolean deleteUser(DeleteUserDto deleteUserDto) {
+        String sql = "DELETE FROM users WHERE loginId = ?";
+        int result = jdbcTemplate.update(sql, deleteUserDto.getLoginId());
+        return result > 0;
+    }
+
+    private RowMapper<User> userPasswordRowMapper() {
+        return new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new User(
+                        rs.getString("password")
+                );
+            }
+        };
+    }
+
 }

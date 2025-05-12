@@ -2,13 +2,10 @@ package org.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
-public class ScheduleRequestDto {
-    private int userId;
-    private String title;
-    private String contents;
+public class ValidatePasswordDto {
+    private String loginId;
     private String password;
 }

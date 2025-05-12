@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ModifyScheduleDto {
+    private String loginId;
     private String password;
     private ScheduleData scheduleData;
 

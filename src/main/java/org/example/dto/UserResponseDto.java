@@ -7,7 +7,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class UserResponseDto {
     private int userId;

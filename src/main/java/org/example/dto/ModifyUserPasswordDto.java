@@ -2,13 +2,11 @@ package org.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
-public class UserRequestDto {
+public class ModifyUserPasswordDto {
     private String loginId;
-    private String email;
-    private String nickname;
-    private String password;
+    private String tempPassword;
+    private String newPassword;
 }
