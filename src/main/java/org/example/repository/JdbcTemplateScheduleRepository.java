@@ -28,14 +28,14 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public Optional<ScheduleResponseDto> saveSchedule(ScheduleRequestDto schedule) {
+    public Optional<ScheduleResponseDto> saveSchedule(int userId, ScheduleRequestDto schedule) {
         LocalDateTime nowDateTime = LocalDateTime.now();
         // 문자열을 작성하지 않고 insert 가능
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("scheduleId");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("userId", schedule.getUserId());
+        parameters.put("userId", userId);
         parameters.put("title", schedule.getTitle());
         parameters.put("contents", schedule.getContents());
         parameters.put("createDate", nowDateTime);
@@ -63,25 +63,6 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         return new PageResponseDto<>(schedules, pageInfo);
     }
 
-
-    @Override
-    public List<ScheduleResponseDto> findAllSchedules(int user_id) {
-        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE userId = ? ORDER BY s.updateDate DESC";
-        return jdbcTemplate.query(sql, scheduleRowMapper(), user_id);
-    }
-
-    @Override
-    public List<ScheduleResponseDto> findAllSchedules(LocalDateTime since, LocalDateTime until) {
-        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE updateDate >= ? AND updateDate <= ? ORDER BY s.updateDate DESC";
-        return jdbcTemplate.query(sql, scheduleRowMapper(), since, until);
-    }
-
-    @Override
-    public List<ScheduleResponseDto> findAllSchedules(int user_id, LocalDateTime since, LocalDateTime until) {
-        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE updateDate >= ? AND updateDate <= ?  AND userId = ? ORDER BY s.updateDate DESC";
-        return jdbcTemplate.query(sql, scheduleRowMapper(), since, until, user_id);
-    }
-
     @Override
     public Optional<ScheduleResponseDto> findOneSchedule(int schedule_id) {
         String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE s.scheduleId = ?";
@@ -89,18 +70,20 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public Optional<ScheduleResponseDto> modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
+    public Optional<ScheduleResponseDto> modifySchedule(ModifyScheduleDto modifyScheduleDto) {
         String sql = "UPDATE schedule SET "
                 + "title = CASE WHEN ? = '' THEN title ELSE ? END, "
                 + "contents = CASE WHEN ? = '' THEN contents ELSE ? END, "
                 + "updateDate = ? WHERE scheduleId = ?";
         jdbcTemplate.update(sql,
                 modifyScheduleDto.getScheduleData().getTitle(),
+                modifyScheduleDto.getScheduleData().getTitle(),
+                modifyScheduleDto.getScheduleData().getContents(),
                 modifyScheduleDto.getScheduleData().getContents(),
                 LocalDateTime.now(),
-                schedule_id
+                modifyScheduleDto.getScheduleData().getScheduleId()
         );
-        return findOneSchedule(schedule_id);
+        return findOneSchedule(modifyScheduleDto.getScheduleData().getScheduleId());
     }
 
     @Override

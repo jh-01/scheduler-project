@@ -22,6 +22,5 @@ public interface UserService {
     void validateUserNotExists(String loginId);
     void validateIdAndPassword(String loginId, String password);
     MessageResponseDto deleteUSer(DeleteUserDto deleteUserDto);
-
     void validatePasswordPolicy(String password);
 }

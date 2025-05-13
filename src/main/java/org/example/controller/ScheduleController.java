@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.dto.*;
 import org.example.service.ScheduleService;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,7 @@ public class ScheduleController {
     // 일정 추가
     @PostMapping
     public ResponseEntity<ScheduleResponseDto> saveSchedule(
-            @RequestBody ScheduleRequestDto scheduleRequestDto
+            @RequestBody @Valid ScheduleRequestDto scheduleRequestDto
     ){
         return new ResponseEntity<>(scheduleService.saveSchedule(scheduleRequestDto), HttpStatus.CREATED);
     }
@@ -32,30 +33,29 @@ public class ScheduleController {
     // 모든 일정 조회
     @GetMapping("/all")
     public ResponseEntity<PageResponseDto<ScheduleResponseDto>> findAllSchedule(
-            @RequestBody PageRequestDto pageRequestDto
+            @RequestBody @Valid PageRequestDto pageRequestDto
     ) {
         return ResponseEntity.ok(scheduleService.findAllSchedule(pageRequestDto));
     }
 
     // 일정 하나 조회
     @GetMapping("/one")
-    public ResponseEntity<ScheduleResponseDto> findOneSchedule(@RequestParam int scheduleId){
-        return new ResponseEntity<>(scheduleService.findOneSchedule(scheduleId), HttpStatus.FOUND);
+    public ResponseEntity<ScheduleResponseDto> findOneSchedule(@RequestParam @Valid int scheduleId){
+        return ResponseEntity.ok(scheduleService.findOneSchedule(scheduleId));
     }
 
     // 일정 수정
     @PatchMapping("/modify")
     public ResponseEntity<ScheduleResponseDto> modifySchedule(
-            @RequestParam int scheduleId,
-            @RequestBody ModifyScheduleDto modifyScheduleDto
+            @RequestBody @Valid ModifyScheduleDto modifyScheduleDto
     ){
-        return ResponseEntity.ok(scheduleService.modifySchedule(scheduleId, modifyScheduleDto));
+        return ResponseEntity.ok(scheduleService.modifySchedule(modifyScheduleDto));
     }
 
     // 일정 삭제
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponseDto> deleteSchedule(
-            @RequestBody DeleteScheduleDto deleteScheduleDto
+            @RequestBody @Valid DeleteScheduleDto deleteScheduleDto
     ) {
         return ResponseEntity.ok(scheduleService.deleteSchedule(deleteScheduleDto));
     }

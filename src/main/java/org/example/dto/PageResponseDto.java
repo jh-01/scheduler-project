@@ -16,8 +16,8 @@ public class PageResponseDto<T> {
     @Getter
     @AllArgsConstructor
     public static class PageInfo{
-        private int page;
-        private int size;
+        private Integer page;
+        private Integer size;
         private long totalCount;
         private boolean hasPrev;
         private boolean hasNext;

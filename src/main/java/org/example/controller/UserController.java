@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.dto.*;
 import org.example.service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> saveUser(@RequestBody UserRequestDto newUser){
+    public ResponseEntity<UserResponseDto> saveUser(@RequestBody @Valid UserRequestDto newUser){
         return ResponseEntity.ok(userService.saveUser(newUser));
     }
 
@@ -49,21 +50,21 @@ public class UserController {
 
     @PatchMapping("/modify/loginId")
     public ResponseEntity<UserResponseDto> modifyUserLoginId(
-            @RequestBody ModifyUserLoginIdDto modifyUserLoginIdDto
+            @RequestBody @Valid ModifyUserLoginIdDto modifyUserLoginIdDto
     ){
         return ResponseEntity.ok(userService.modifyUserLoginId(modifyUserLoginIdDto));
     }
 
     @PatchMapping("/modify/info")
     public ResponseEntity<UserResponseDto> modifyUserInfo(
-            @RequestBody ModifyUserInfoDto modifyUserInfoDto
+            @RequestBody @Valid ModifyUserInfoDto modifyUserInfoDto
     ){
         return ResponseEntity.ok(userService.modifyUserInfo(modifyUserInfoDto));
     }
 
     @PatchMapping("/modify/password")
     public ResponseEntity<Map<String, String>> modifyUserPassword(
-            @RequestBody ModifyUserPasswordDto modifyUserPasswordDto
+            @RequestBody @Valid ModifyUserPasswordDto modifyUserPasswordDto
     ){
         userService.modifyUserPassword(modifyUserPasswordDto);
         Map<String, String> response = new HashMap<>();
@@ -73,17 +74,8 @@ public class UserController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponseDto> deleteUser(
-        @RequestBody DeleteUserDto deleteUserDto
+        @RequestBody @Valid DeleteUserDto deleteUserDto
     ){
         return ResponseEntity.ok(userService.deleteUSer(deleteUserDto));
     }
-
-    // 예외 처리
-//    @ExceptionHandler(ResponseStatusException.class)
-//    public ResponseEntity<Map<String,String>> handleResponseStatusException(ResponseStatusException responseStatusException){
-//        Map<String,String> errorMessage = new HashMap<>();
-//        errorMessage.put("status", responseStatusException.getStatusCode().toString());
-//        errorMessage.put("message", responseStatusException.getReason());
-//        return ResponseEntity.status(responseStatusException.getStatusCode()).body(errorMessage);
-//    }
 }

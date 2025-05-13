@@ -17,9 +17,7 @@ public interface UserRepository {
     Optional<UserResponseDto> modifyUserInfo(ModifyUserInfoDto modifyUserInfoDto);
     Optional<UserResponseDto> modifyUserPassword(ModifyUserPasswordDto modifyUserPasswordDto);
     boolean existsByLoginId(String loginId);
-
     boolean existsByUserId(int userId);
-
     boolean validatePassword(String loginId, String password);
     boolean deleteUser(DeleteUserDto deleteUserDto);
 }

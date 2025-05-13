@@ -1,20 +1,13 @@
 package org.example.service;
 
 import org.example.dto.*;
-import org.example.entity.Schedule;
 import org.example.exception.ScheduleCreationException;
 import org.example.exception.ScheduleDeletionException;
 import org.example.exception.ScheduleFindException;
 import org.example.exception.ScheduleModifyException;
 import org.example.repository.JdbcTemplateScheduleRepository;
 import org.example.repository.ScheduleRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,10 +23,12 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto scheduleRequestDto){
         // 존재하는 유저인지 확인
-        userService.validateUserExists(scheduleRequestDto.getUserId());
+        userService.validateIdAndPassword(scheduleRequestDto.getLoginId(), scheduleRequestDto.getPassword());
+        // 유저의 인덱스 아이디 값 확인
+        UserResponseDto userResponseDto = userService.findUser(scheduleRequestDto.getLoginId());
 
         // 일정 생성 후 확인
-        Optional<ScheduleResponseDto> newSchedule = scheduleRepository.saveSchedule(scheduleRequestDto);
+        Optional<ScheduleResponseDto> newSchedule = scheduleRepository.saveSchedule(userResponseDto.getUserId(), scheduleRequestDto);
         if(newSchedule.isEmpty()) throw new ScheduleCreationException("일정 생성에 오류가 발생했습니다.");
         return newSchedule.get();
     }
@@ -55,12 +50,12 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public ScheduleResponseDto modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
+    public ScheduleResponseDto modifySchedule(ModifyScheduleDto modifyScheduleDto) {
         // 아이디 비밀번호 검증
         userService.validateIdAndPassword(modifyScheduleDto.getLoginId(), modifyScheduleDto.getPassword());
 
         // 일정 수정 처리
-        Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.modifySchedule(schedule_id, modifyScheduleDto);
+        Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.modifySchedule(modifyScheduleDto);
         if(scheduleResponseDto.isEmpty()) throw new ScheduleModifyException("일정 수정 중 오류가 발생했습니다.");
         return scheduleResponseDto.get();
     }

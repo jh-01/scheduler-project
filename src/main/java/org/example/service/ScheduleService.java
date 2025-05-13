@@ -11,6 +11,6 @@ public interface ScheduleService {
     ScheduleResponseDto saveSchedule(ScheduleRequestDto scheduleRequestDto);
     PageResponseDto<ScheduleResponseDto> findAllSchedule(PageRequestDto pageRequestDto);
     ScheduleResponseDto findOneSchedule(int schedule_id);
-    ScheduleResponseDto modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto);
+    ScheduleResponseDto modifySchedule(ModifyScheduleDto modifyScheduleDto);
     MessageResponseDto deleteSchedule(DeleteScheduleDto deleteScheduleDto);
 }

@@ -1,14 +1,30 @@
 package org.example.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
 public class UserRequestDto {
+    @NotBlank(message = "로그인 아이디는 필수입니다.")
+    @Size(min = 4, max = 20, message = "아이디는 4~20자여야 합니다.")
     private String loginId;
+
+    @NotBlank(message = "이메일은 필수입니다.")
+    @Email(message = "올바른 이메일 형식이어야 합니다.")
     private String email;
-    private String nickname;
+
+    @NotBlank(message = "비밀번호는 필수입니다.")
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&^])[A-Za-z\\d@$!%*#?&^]{8,}$",
+            message = "비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다."
+    )
     private String password;
+
+    @NotBlank(message = "닉네임은 필수입니다.")
+    private String nickname;
 }

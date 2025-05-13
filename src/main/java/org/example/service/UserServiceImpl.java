@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public MessageResponseDto validateLoginIdExists(String loginId){
-        if(userRepository.existsByLoginId(loginId)) return new MessageResponseDto("중복 아이디입니다.");
+        if(userRepository.existsByLoginId(loginId)) throw new DuplicatedLoginIdException("중복 아이디입니다.");
         return new MessageResponseDto("사용 가능 아이디입니다.");
     }
 

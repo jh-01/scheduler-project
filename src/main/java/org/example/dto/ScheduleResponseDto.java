@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class ScheduleResponseDto {
-    private int scheduleId;
+    private Integer scheduleId;
     private String nickname;
     private String title;
     private String contents;
