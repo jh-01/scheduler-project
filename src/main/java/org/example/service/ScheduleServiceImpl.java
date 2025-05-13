@@ -2,6 +2,10 @@ package org.example.service;
 
 import org.example.dto.*;
 import org.example.entity.Schedule;
+import org.example.exception.ScheduleCreationException;
+import org.example.exception.ScheduleDeletionException;
+import org.example.exception.ScheduleFindException;
+import org.example.exception.ScheduleModifyException;
 import org.example.repository.JdbcTemplateScheduleRepository;
 import org.example.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
@@ -25,61 +29,50 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto scheduleRequestDto){
+        // 존재하는 유저인지 확인
+        userService.validateUserExists(scheduleRequestDto.getUserId());
+
+        // 일정 생성 후 확인
         Optional<ScheduleResponseDto> newSchedule = scheduleRepository.saveSchedule(scheduleRequestDto);
-        if(newSchedule.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일정 생성에 오류가 발생했습니다.");
+        if(newSchedule.isEmpty()) throw new ScheduleCreationException("일정 생성에 오류가 발생했습니다.");
         return newSchedule.get();
     }
 
     @Override
     public PageResponseDto<ScheduleResponseDto> findAllSchedule(PageRequestDto pageRequestDto) {
+        // 존재하는 유저인지 확인
+        userService.validateUserExists(pageRequestDto.getLoginId());
+        // 조건에 맞는 모든 일정 찾기 처리
         return scheduleRepository.findAllSchedules(pageRequestDto);
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedule(int user_id) {
-        return scheduleRepository.findAllSchedules(user_id);
-    }
-
-    @Override
-    public List<ScheduleResponseDto> findAllSchedule(LocalDateTime since, LocalDateTime until) {
-        return scheduleRepository.findAllSchedules(since, until);
-    }
-
-    @Override
-    public List<ScheduleResponseDto> findAllSchedule(int user_id, LocalDateTime since, LocalDateTime until) {
-        return scheduleRepository.findAllSchedules(user_id, since, until);
-    }
-
-    @Override
     public ScheduleResponseDto findOneSchedule(int schedule_id) {
+        // 특정 일정 찾기 처리
         Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.findOneSchedule(schedule_id);
-        if(scheduleResponseDto.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다.");
+        if(scheduleResponseDto.isEmpty()) throw new ScheduleFindException("존재하지 않는 일정입니다.");
         return scheduleResponseDto.get();
     }
 
     @Override
     public ScheduleResponseDto modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
-        // 해당 유저 찾기
-        ScheduleResponseDto tempSchedule = findOneSchedule (schedule_id);
+        // 아이디 비밀번호 검증
+        userService.validateIdAndPassword(modifyScheduleDto.getLoginId(), modifyScheduleDto.getPassword());
 
-        // 비밀번호 검증
-        userService.validatePassword(modifyScheduleDto.getLoginId(), modifyScheduleDto.getPassword());
-
-        // 비어있는 항목이 있을 경우 기존의 값을 유지하도록 처리
-        // 근데 이건 프론트단에서 처리해야 하는거 아닌가...? 제목과 내용은 비어있을 수 없습니다 같이...
-        if(Objects.equals(modifyScheduleDto.getScheduleData().getTitle(), "")) modifyScheduleDto.getScheduleData().setTitle(tempSchedule.getTitle());
-        if(Objects.equals(modifyScheduleDto.getScheduleData().getContents(), "")) modifyScheduleDto.getScheduleData().setContents(tempSchedule.getContents());
-
+        // 일정 수정 처리
         Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.modifySchedule(schedule_id, modifyScheduleDto);
-        if(scheduleResponseDto.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다.");
+        if(scheduleResponseDto.isEmpty()) throw new ScheduleModifyException("일정 수정 중 오류가 발생했습니다.");
         return scheduleResponseDto.get();
     }
 
     @Override
-    public MessageResponseDto deleteSchedule(int schedule_id, String password) {
-        // 비밀번호 처리 -> 유저 테이블 기능 만든 후에..
+    public MessageResponseDto deleteSchedule(DeleteScheduleDto deleteScheduleDto) {
+        // 아이디 비밀번호 검증
+        userService.validateIdAndPassword(deleteScheduleDto.getLoginId(), deleteScheduleDto.getPassword());
 
-        if(!scheduleRepository.deleteSchedule(schedule_id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다.");
-        return new MessageResponseDto("삭제 완료");
+        // 일정 삭제 처리
+        if(!scheduleRepository.deleteSchedule(deleteScheduleDto.getScheduleId()))
+            throw new ScheduleDeletionException("일정 삭제 중 오류가 발생했습니다.");
+        return new MessageResponseDto("일정 삭제를 완료했습니다.");
     }
 }

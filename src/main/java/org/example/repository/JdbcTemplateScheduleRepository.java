@@ -90,7 +90,10 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public Optional<ScheduleResponseDto> modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto) {
-        String sql = "UPDATE schedule SET title = ?, contents = ?, updateDate = ? WHERE scheduleId = ?";
+        String sql = "UPDATE schedule SET "
+                + "title = CASE WHEN ? = '' THEN title ELSE ? END, "
+                + "contents = CASE WHEN ? = '' THEN contents ELSE ? END, "
+                + "updateDate = ? WHERE scheduleId = ?";
         jdbcTemplate.update(sql,
                 modifyScheduleDto.getScheduleData().getTitle(),
                 modifyScheduleDto.getScheduleData().getContents(),

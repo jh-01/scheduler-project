@@ -10,10 +10,7 @@ import java.util.List;
 public interface ScheduleService {
     ScheduleResponseDto saveSchedule(ScheduleRequestDto scheduleRequestDto);
     PageResponseDto<ScheduleResponseDto> findAllSchedule(PageRequestDto pageRequestDto);
-    List<ScheduleResponseDto> findAllSchedule(int user_id);
-    List<ScheduleResponseDto> findAllSchedule(LocalDateTime since, LocalDateTime until);
-    List<ScheduleResponseDto> findAllSchedule(int user_id, LocalDateTime since, LocalDateTime until);
     ScheduleResponseDto findOneSchedule(int schedule_id);
     ScheduleResponseDto modifySchedule(int schedule_id, ModifyScheduleDto modifyScheduleDto);
-    MessageResponseDto deleteSchedule(int scheduleId, String password);
+    MessageResponseDto deleteSchedule(DeleteScheduleDto deleteScheduleDto);
 }

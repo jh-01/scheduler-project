@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.dto.*;
 import org.example.service.ScheduleService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,9 +55,8 @@ public class ScheduleController {
     // 일정 삭제
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponseDto> deleteSchedule(
-            @RequestParam int scheduleId,
-            @RequestBody String password
+            @RequestBody DeleteScheduleDto deleteScheduleDto
     ) {
-        return ResponseEntity.ok(scheduleService.deleteSchedule(scheduleId, password));
+        return ResponseEntity.ok(scheduleService.deleteSchedule(deleteScheduleDto));
     }
 }

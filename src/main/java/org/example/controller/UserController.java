@@ -5,6 +5,9 @@ import org.example.service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.lang.module.ResolutionException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -74,4 +77,13 @@ public class UserController {
     ){
         return ResponseEntity.ok(userService.deleteUSer(deleteUserDto));
     }
+
+    // 예외 처리
+//    @ExceptionHandler(ResponseStatusException.class)
+//    public ResponseEntity<Map<String,String>> handleResponseStatusException(ResponseStatusException responseStatusException){
+//        Map<String,String> errorMessage = new HashMap<>();
+//        errorMessage.put("status", responseStatusException.getStatusCode().toString());
+//        errorMessage.put("message", responseStatusException.getReason());
+//        return ResponseEntity.status(responseStatusException.getStatusCode()).body(errorMessage);
+//    }
 }

@@ -3,6 +3,8 @@ package org.example.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.*;
 import org.example.entity.User;
+import org.example.exception.ScheduleDeletionException;
+import org.example.exception.ScheduleFindException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -118,6 +120,12 @@ public class JdbcTemplateUserRepository implements UserRepository{
     }
 
     @Override
+    public boolean existsByUserId(int userId) {
+        String sql = "SELECT exists(SELECT * FROM users WHERE userId = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, userId));
+    }
+
+    @Override
     public boolean validatePassword(String loginId, String password) {
         String sql = "SELECT password FROM users WHERE loginId = ?";
         List<User> user = jdbcTemplate.query(sql, userPasswordRowMapper(), loginId);
@@ -129,6 +137,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
     public boolean deleteUser(DeleteUserDto deleteUserDto) {
         String sql = "DELETE FROM users WHERE loginId = ?";
         int result = jdbcTemplate.update(sql, deleteUserDto.getLoginId());
+        if(result == 0) throw new ScheduleFindException("존재하지 않는 일정입니다.");
         return result > 0;
     }
 

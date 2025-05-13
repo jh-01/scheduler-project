@@ -18,7 +18,10 @@ public interface UserService {
     UserResponseDto modifyUserPassword(ModifyUserPasswordDto modifyUserPasswordDto);
     MessageResponseDto validateLoginIdExists(String loginId);
     void validateUserExists(String loginId);
+    void validateUserExists(int userId);
     void validateUserNotExists(String loginId);
-    void validatePassword(String loginId, String password);
+    void validateIdAndPassword(String loginId, String password);
     MessageResponseDto deleteUSer(DeleteUserDto deleteUserDto);
+
+    void validatePasswordPolicy(String password);
 }

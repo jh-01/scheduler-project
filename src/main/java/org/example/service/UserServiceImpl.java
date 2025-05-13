@@ -2,11 +2,11 @@ package org.example.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.*;
+import org.example.exception.*;
 import org.example.repository.JdbcTemplateUserRepository;
 import org.example.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +22,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponseDto saveUser(UserRequestDto user) {
-        validateUserExists(user.getLoginId());
+        validateUserNotExists(user.getLoginId());
+        validatePasswordPolicy(user.getPassword());
         Optional<UserResponseDto> newUser = userRepository.saveUser(user);
-        if(newUser.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 생성에 오류가 발생했습니다.");
+        if(newUser.isEmpty()) throw new UserCreationException("유저 생성에 오류가 발생했습니다.");
         return newUser.get();
     }
 
@@ -36,85 +37,95 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseDto findUser(String loginId) {
         Optional<UserResponseDto> user = userRepository.findUser(loginId);
-        if(user.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다..");
+        if(user.isEmpty()) throw new UserFindException("존재하지 않는 유저입니다.");
         return user.get();
     }
 
     @Override
     public UserResponseDto modifyUserLoginId(ModifyUserLoginIdDto modifyUserLoginIdDto) {
-        validateUserExists(modifyUserLoginIdDto.getTempLoginId());
+        // 수정하려고 받은 새 로그인 아이디가 중복된 아이디인지 확인
         validateUserNotExists(modifyUserLoginIdDto.getNewLoginId());
-        validatePassword(modifyUserLoginIdDto.getTempLoginId(), modifyUserLoginIdDto.getPassword());
+        // 패스워드 검증
+        validateIdAndPassword(modifyUserLoginIdDto.getTempLoginId(), modifyUserLoginIdDto.getPassword());
 
+        // 유저 아이디 수정 처리
         Optional<UserResponseDto> modifiedUser = userRepository.modifyUserLoginId(modifyUserLoginIdDto);
-        if(modifiedUser.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 로그인 아이디 수정에 실패했습니다.");
+        if(modifiedUser.isEmpty()) throw new UserModifyException("유저 로그인 아이디 수정에 실패했습니다.");
         return modifiedUser.get();
     }
 
     @Override
     public UserResponseDto modifyUserInfo(ModifyUserInfoDto modifyUserInfoDto) {
-        // 존재하는 유저인지 먼저 확인하고 비밀번호 검증
-        validateUserExists(modifyUserInfoDto.getLoginId());
-        validatePassword(modifyUserInfoDto.getLoginId(), modifyUserInfoDto.getPassword());
+        // 아이디 패스워드 검증
+        validateIdAndPassword(modifyUserInfoDto.getLoginId(), modifyUserInfoDto.getPassword());
 
+        // 유저 정보 수정 처리
         Optional<UserResponseDto> modifiedUser = userRepository.modifyUserInfo(modifyUserInfoDto);
-        if(modifiedUser.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보 수정에 실패했습니다.");
+        if(modifiedUser.isEmpty()) throw new UserModifyException("유저 정보 수정에 실패했습니다.");
         return modifiedUser.get();
     }
 
     @Override
     public UserResponseDto modifyUserPassword(ModifyUserPasswordDto modifyUserPasswordDto) {
-        // 존재하는 유저인지 먼저 확인하고 비밀번호 검증
-        validateUserExists(modifyUserPasswordDto.getLoginId());
-        validatePassword(modifyUserPasswordDto.getLoginId(), modifyUserPasswordDto.getTempPassword());
+        // 아이디 패스워드 검증
+        validateIdAndPassword(modifyUserPasswordDto.getLoginId(), modifyUserPasswordDto.getTempPassword());
+        // 수정할 패스워드가 규칙을 지켰는지 검증
+        validatePasswordPolicy(modifyUserPasswordDto.getNewPassword());
 
+        // 유저 비밀번호 수정 처리
         Optional<UserResponseDto> modifiedUser = userRepository.modifyUserPassword(modifyUserPasswordDto);
-        if(modifiedUser.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 비밀번호 수정에 실패했습니다.");
+        if(modifiedUser.isEmpty()) throw new UserModifyException("유저 비밀번호 수정에 실패했습니다.");
         return modifiedUser.get();
     }
 
     @Override
     public MessageResponseDto validateLoginIdExists(String loginId){
-        if(userRepository.existsByLoginId(loginId)) return new MessageResponseDto("중복 아이디");
-        return new MessageResponseDto("사용 가능 아이디");
+        if(userRepository.existsByLoginId(loginId)) return new MessageResponseDto("중복 아이디입니다.");
+        return new MessageResponseDto("사용 가능 아이디입니다.");
     }
 
     @Override
     public void validateUserExists(String loginId){
         if (!userRepository.existsByLoginId(loginId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 유저가 존재하지 않습니다.");
+            throw new UserFindException("해당 유저가 존재하지 않습니다.");
+        }
+    }
+
+    @Override
+    public void validateUserExists(int userId){
+        if (!userRepository.existsByUserId(userId)) {
+            throw new UserFindException("해당 유저가 존재하지 않습니다.");
         }
     }
 
     @Override
     public void validateUserNotExists(String loginId) {
         if (userRepository.existsByLoginId(loginId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 로그인 아이디입니다.");
+            throw new DuplicatedLoginIdException("이미 사용 중인 로그인 아이디입니다.");
         }
     }
 
     @Override
-    public void validatePassword(String loginId, String password){
+    public void validateIdAndPassword(String loginId, String password){
+        validateUserExists(loginId);
         if (!userRepository.validatePassword(loginId, password)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 유저가 존재하지 않습니다.");
+            throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
         }
     }
 
     @Override
     public MessageResponseDto deleteUSer(DeleteUserDto deleteUserDto) {
         validateUserExists(deleteUserDto.getLoginId());
-        validatePassword(deleteUserDto.getLoginId(), deleteUserDto.getPassword());
-        if(!userRepository.deleteUser(deleteUserDto)) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "유저 삭제에 실패했습니다.");
-        return new MessageResponseDto("삭제 완료");
+        validateIdAndPassword(deleteUserDto.getLoginId(), deleteUserDto.getPassword());
+        if(!userRepository.deleteUser(deleteUserDto)) throw new UserDeletionException("유저 삭제에 실패했습니다.");
+        return new MessageResponseDto("유저 삭제 완료했습니다.");
     }
 
-//    @Override
-//    public UserResponseDto modifyUser() {
-//        return null;
-//    }
-//
-//    @Override
-//    public MessageResponseDto deleteUser() {
-//        return null;
-//    }
+    @Override
+    public void validatePasswordPolicy(String password) {
+        String pattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&^])[A-Za-z\\d@$!%*#?&^]{8,}$";
+        if (!password.matches(pattern)) {
+            throw new InvalidPasswordException("비밀번호는 8자리 이상이어야 하고, 영어, 숫자, 특수문자를 모두 포함해야 합니다.");
+        }
+    }
 }
