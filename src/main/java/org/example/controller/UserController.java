@@ -34,16 +34,12 @@ public class UserController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime since,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime until
     ){
-        if (since != null && until != null) {
-            return ResponseEntity.ok(userService.findAllUsers(since, until));
-        } else {
-            return ResponseEntity.ok(userService.findAllUsers());
-        }
+        return ResponseEntity.ok(userService.findAllUsers(since, until));
     }
 
     @GetMapping("/one")
     public ResponseEntity<UserResponseDto> findUser(
-            @RequestParam String loginId
+            @RequestParam(required = true) String loginId
     ){
         return ResponseEntity.ok(userService.findUser(loginId));
     }
@@ -78,11 +74,4 @@ public class UserController {
     ){
         return ResponseEntity.ok(userService.deleteUSer(deleteUserDto));
     }
-
-//    @GetMapping("validate")
-//    public ResponseEntity<MessageResponseDto> validatePassword(
-//            @RequestBody ValidatePasswordDto validatePasswordDto
-//    ){
-//        return ResponseEntity.ok(userService.validatePassword(validatePasswordDto.getLoginId(), validatePasswordDto.getPassword()));
-//    }
 }

@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface UserRepository {
     Optional<UserResponseDto> saveUser(UserRequestDto user);
     List<UserResponseDto> findAllUsers(LocalDateTime since, LocalDateTime until);
-    List<UserResponseDto> findAllUsers();
     Optional<UserResponseDto> findUser(int userId);
     Optional<UserResponseDto> findUser(String loginId);
     Optional<UserResponseDto> modifyUserLoginId(ModifyUserLoginIdDto modifyUserLoginIdDto);

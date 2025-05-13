@@ -45,13 +45,14 @@ public class JdbcTemplateUserRepository implements UserRepository{
 
     @Override
     public List<UserResponseDto> findAllUsers(LocalDateTime since, LocalDateTime until) {
-        String sql = "SELECT * FROM users WHERE updateDate >= ? AND updateDate <= ? ORDER BY updateDate DESC";
-        return jdbcTemplate.query(sql, userRowMapper(), since, until);
-    }
-
-    @Override
-    public List<UserResponseDto> findAllUsers() {
-        return jdbcTemplate.query("select * from users ORDER BY updateDate DESC", userRowMapper());
+        String sql = "SELECT * FROM users";
+        if(since != null || until != null){
+            sql += " WHERE createDate >= ? AND createDate <= ? ORDER BY createDate DESC";
+            return jdbcTemplate.query(sql, userRowMapper(), since, until);
+        } else {
+            sql +=" ORDER BY updateDate DESC";
+            return jdbcTemplate.query(sql, userRowMapper());
+        }
     }
 
     private RowMapper<UserResponseDto> userRowMapper() {

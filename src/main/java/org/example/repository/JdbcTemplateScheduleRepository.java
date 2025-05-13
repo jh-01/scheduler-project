@@ -1,8 +1,6 @@
 package org.example.repository;
 
-import org.example.dto.ModifyScheduleDto;
-import org.example.dto.ScheduleRequestDto;
-import org.example.dto.ScheduleResponseDto;
+import org.example.dto.*;
 import org.example.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -50,9 +48,21 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedules() {
-        return jdbcTemplate.query("select * from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC", scheduleRowMapper());
+    public PageResponseDto<ScheduleResponseDto> findAllSchedules(PageRequestDto pageRequestDto) {
+        String sql = "select * from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC LIMIT ?, ?";
+        List<ScheduleResponseDto> schedules = jdbcTemplate.query(sql, scheduleRowMapper(), pageRequestDto.getOffset(), pageRequestDto.getSize());
+        int totalSchedules = jdbcTemplate.queryForObject("select COUNT(*) from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC", Integer.class);
+        int totalPages = totalSchedules / pageRequestDto.getSize() + (totalSchedules % pageRequestDto.getSize() > 0? 1 : 0);
+        PageResponseDto.PageInfo pageInfo = new PageResponseDto.PageInfo(
+                pageRequestDto.getPage(),
+                pageRequestDto.getSize(),
+                totalSchedules,
+                totalPages < pageRequestDto.getPage(),
+                totalPages > pageRequestDto.getPage()
+        );
+        return new PageResponseDto<>(schedules, pageInfo);
     }
+
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules(int user_id) {

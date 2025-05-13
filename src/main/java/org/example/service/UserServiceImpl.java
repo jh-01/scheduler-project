@@ -30,12 +30,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<UserResponseDto> findAllUsers(LocalDateTime since, LocalDateTime until) {
-        return userRepository.findAllUsers();
-    }
-
-    @Override
-    public List<UserResponseDto> findAllUsers() {
-        return userRepository.findAllUsers();
+        return userRepository.findAllUsers(since, until);
     }
 
     @Override

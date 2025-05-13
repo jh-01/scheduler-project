@@ -1,9 +1,6 @@
 package org.example.service;
 
-import org.example.dto.MessageResponseDto;
-import org.example.dto.ModifyScheduleDto;
-import org.example.dto.ScheduleRequestDto;
-import org.example.dto.ScheduleResponseDto;
+import org.example.dto.*;
 import org.example.entity.Schedule;
 import org.example.repository.JdbcTemplateScheduleRepository;
 import org.example.repository.ScheduleRepository;
@@ -34,8 +31,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedule() {
-        return scheduleRepository.findAllSchedules();
+    public PageResponseDto<ScheduleResponseDto> findAllSchedule(PageRequestDto pageRequestDto) {
+        return scheduleRepository.findAllSchedules(pageRequestDto);
     }
 
     @Override

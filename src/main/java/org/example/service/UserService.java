@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface UserService {
     UserResponseDto saveUser(UserRequestDto user);
     List<UserResponseDto> findAllUsers(LocalDateTime since, LocalDateTime until);
-    List<UserResponseDto> findAllUsers();
     UserResponseDto findUser(String loginId);
     UserResponseDto modifyUserLoginId(ModifyUserLoginIdDto modifyUserLoginIdDto);
     UserResponseDto modifyUserInfo(ModifyUserInfoDto modifyUserInfoDto);
