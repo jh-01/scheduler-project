@@ -6,9 +6,6 @@ import org.example.service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.lang.module.ResolutionException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -23,16 +20,19 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 유저 생성
     @PostMapping
     public ResponseEntity<UserResponseDto> saveUser(@RequestBody @Valid UserRequestDto newUser){
         return ResponseEntity.ok(userService.saveUser(newUser));
     }
 
+    // 아이디 중복 확인
     @GetMapping("/isDuplicate")
     public ResponseEntity<MessageResponseDto> validateLoginId(@RequestParam String loginId){
         return ResponseEntity.ok(userService.validateLoginIdExists(loginId));
     }
 
+    // 다중 유저 조회
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseDto>> findAllUsers(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime since,
@@ -41,6 +41,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findAllUsers(since, until));
     }
 
+    // 개별 유저 조회
     @GetMapping("/one")
     public ResponseEntity<UserResponseDto> findUser(
             @RequestParam(required = true) String loginId
@@ -48,6 +49,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findUser(loginId));
     }
 
+    // 유저 아이디 수정
     @PatchMapping("/modify/loginId")
     public ResponseEntity<UserResponseDto> modifyUserLoginId(
             @RequestBody @Valid ModifyUserLoginIdDto modifyUserLoginIdDto
@@ -55,6 +57,7 @@ public class UserController {
         return ResponseEntity.ok(userService.modifyUserLoginId(modifyUserLoginIdDto));
     }
 
+    // 유저 정보 수정
     @PatchMapping("/modify/info")
     public ResponseEntity<UserResponseDto> modifyUserInfo(
             @RequestBody @Valid ModifyUserInfoDto modifyUserInfoDto
@@ -62,6 +65,7 @@ public class UserController {
         return ResponseEntity.ok(userService.modifyUserInfo(modifyUserInfoDto));
     }
 
+    // 유저 비밀번호 수정
     @PatchMapping("/modify/password")
     public ResponseEntity<Map<String, String>> modifyUserPassword(
             @RequestBody @Valid ModifyUserPasswordDto modifyUserPasswordDto
@@ -72,6 +76,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // 유저 삭제
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponseDto> deleteUser(
         @RequestBody @Valid DeleteUserDto deleteUserDto

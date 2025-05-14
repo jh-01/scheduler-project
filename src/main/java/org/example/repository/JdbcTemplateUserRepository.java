@@ -3,7 +3,6 @@ package org.example.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.*;
 import org.example.entity.User;
-import org.example.exception.ScheduleDeletionException;
 import org.example.exception.ScheduleFindException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,7 +27,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
 
     @Override
     public Optional<UserResponseDto> saveUser(UserRequestDto user) {
-        LocalDateTime nowdate = LocalDateTime.now();
+        LocalDateTime nowDate = LocalDateTime.now();
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         jdbcInsert.withTableName("users").usingGeneratedKeyColumns("userId");
 
@@ -37,8 +36,8 @@ public class JdbcTemplateUserRepository implements UserRepository{
         parameters.put("nickname", user.getNickname());
         parameters.put("email", user.getEmail());
         parameters.put("password", user.getPassword());
-        parameters.put("createDate", nowdate);
-        parameters.put("updateDate", nowdate);
+        parameters.put("createDate", nowDate);
+        parameters.put("updateDate", nowDate);
 
         // 식별자 auto increment
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
@@ -48,6 +47,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
     @Override
     public List<UserResponseDto> findAllUsers(LocalDateTime since, LocalDateTime until) {
         String sql = "SELECT * FROM users";
+        // 기준으로 입력받은 날짜가 null이 아닌 경우
         if(since != null || until != null){
             sql += " WHERE createDate >= ? AND createDate <= ? ORDER BY createDate DESC";
             return jdbcTemplate.query(sql, userRowMapper(), since, until);
@@ -113,6 +113,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
         return findUser(modifyUserPasswordDto.getLoginId());
     }
 
+    // 유저 존재 여부 반환
     @Override
     public boolean existsByLoginId(String loginId) {
         String sql = "SELECT exists(SELECT * FROM users WHERE loginId = ?)";
@@ -125,6 +126,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, userId));
     }
 
+    // 비밀번호 검증
     @Override
     public boolean validatePassword(String loginId, String password) {
         String sql = "SELECT password FROM users WHERE loginId = ?";
@@ -151,5 +153,4 @@ public class JdbcTemplateUserRepository implements UserRepository{
             }
         };
     }
-
 }

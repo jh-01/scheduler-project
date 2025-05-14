@@ -3,7 +3,6 @@ package org.example.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 
 @Getter

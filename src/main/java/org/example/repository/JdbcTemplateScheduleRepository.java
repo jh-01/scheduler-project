@@ -1,7 +1,6 @@
 package org.example.repository;
 
 import org.example.dto.*;
-import org.example.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -49,9 +48,13 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public PageResponseDto<ScheduleResponseDto> findAllSchedules(PageRequestDto pageRequestDto) {
+        // join을 사용하여 유저의 닉네임까지 같이 출력하도록 함
         String sql = "select * from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC LIMIT ?, ?";
         List<ScheduleResponseDto> schedules = jdbcTemplate.query(sql, scheduleRowMapper(), pageRequestDto.getOffset(), pageRequestDto.getSize());
+
+        // 총 일정 수
         int totalSchedules = jdbcTemplate.queryForObject("select COUNT(*) from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC", Integer.class);
+        // 가능한 총 페이지 수
         int totalPages = totalSchedules / pageRequestDto.getSize() + (totalSchedules % pageRequestDto.getSize() > 0? 1 : 0);
         PageResponseDto.PageInfo pageInfo = new PageResponseDto.PageInfo(
                 pageRequestDto.getPage(),
@@ -71,6 +74,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public Optional<ScheduleResponseDto> modifySchedule(ModifyScheduleDto modifyScheduleDto) {
+        // 빈 값이 들어온 경우 기존의 값 유지
         String sql = "UPDATE schedule SET "
                 + "title = CASE WHEN ? = '' THEN title ELSE ? END, "
                 + "contents = CASE WHEN ? = '' THEN contents ELSE ? END, "

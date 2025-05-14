@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public MessageResponseDto validateLoginIdExists(String loginId){
         if(userRepository.existsByLoginId(loginId)) throw new DuplicatedLoginIdException("중복 아이디입니다.");
-        return new MessageResponseDto("사용 가능 아이디입니다.");
+        return new MessageResponseDto(true, "사용 가능 아이디입니다.");
     }
 
     @Override
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService{
         validateUserExists(deleteUserDto.getLoginId());
         validateIdAndPassword(deleteUserDto.getLoginId(), deleteUserDto.getPassword());
         if(!userRepository.deleteUser(deleteUserDto)) throw new UserDeletionException("유저 삭제에 실패했습니다.");
-        return new MessageResponseDto("유저 삭제 완료했습니다.");
+        return new MessageResponseDto(true, "유저 삭제 완료했습니다.");
     }
 
     @Override

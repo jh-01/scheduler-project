@@ -68,6 +68,6 @@ public class ScheduleServiceImpl implements ScheduleService{
         // 일정 삭제 처리
         if(!scheduleRepository.deleteSchedule(deleteScheduleDto.getScheduleId()))
             throw new ScheduleDeletionException("일정 삭제 중 오류가 발생했습니다.");
-        return new MessageResponseDto("일정 삭제를 완료했습니다.");
+        return new MessageResponseDto(true, "일정 삭제를 완료했습니다.");
     }
 }

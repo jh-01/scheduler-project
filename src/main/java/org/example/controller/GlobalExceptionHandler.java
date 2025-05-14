@@ -8,10 +8,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.util.HashMap;
 import java.util.Map;
 
+// 오류 처리를 위한 controller
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicatedLoginIdException.class)

@@ -6,10 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class ModifyScheduleDto {
     @NotBlank(message = "일정 수정 시 로그인 아이디 입력은 필수입니다.")
     private String loginId;
@@ -20,7 +18,6 @@ public class ModifyScheduleDto {
     private ScheduleData scheduleData;
 
     @Getter
-    @Setter
     @AllArgsConstructor
     public static class ScheduleData {
         @NotNull(message = "일정 아이디는 필수입니다.")
