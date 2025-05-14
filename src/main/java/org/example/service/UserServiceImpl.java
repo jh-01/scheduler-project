@@ -115,7 +115,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public MessageResponseDto deleteUSer(DeleteUserDto deleteUserDto) {
-        validateUserExists(deleteUserDto.getLoginId());
         validateIdAndPassword(deleteUserDto.getLoginId(), deleteUserDto.getPassword());
         if(!userRepository.deleteUser(deleteUserDto)) throw new UserDeletionException("유저 삭제에 실패했습니다.");
         return new MessageResponseDto(true, "유저 삭제 완료했습니다.");
