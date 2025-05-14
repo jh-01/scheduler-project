@@ -20,6 +20,6 @@ CREATE TABLE schedule (
     updateDate    DATETIME COMMENT '수정 날짜',
 
     CONSTRAINT fk_schedule_user
-        FOREIGN KEY (user_id) REFERENCES users(userId)
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
             ON DELETE CASCADE
 );

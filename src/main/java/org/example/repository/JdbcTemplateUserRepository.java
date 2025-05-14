@@ -32,12 +32,12 @@ public class JdbcTemplateUserRepository implements UserRepository{
         jdbcInsert.withTableName("users").usingGeneratedKeyColumns("userId");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("loginId", user.getLoginId());
+        parameters.put("login_id", user.getLoginId());
         parameters.put("nickname", user.getNickname());
         parameters.put("email", user.getEmail());
         parameters.put("password", user.getPassword());
-        parameters.put("createDate", nowDate);
-        parameters.put("updateDate", nowDate);
+        parameters.put("create_date", nowDate);
+        parameters.put("update_date", nowDate);
 
         // 식별자 auto increment
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
@@ -49,10 +49,10 @@ public class JdbcTemplateUserRepository implements UserRepository{
         String sql = "SELECT * FROM users";
         // 기준으로 입력받은 날짜가 null이 아닌 경우
         if(since != null || until != null){
-            sql += " WHERE createDate >= ? AND createDate <= ? ORDER BY createDate DESC";
+            sql += " WHERE create_date >= ? AND create_date <= ? ORDER BY create_date DESC";
             return jdbcTemplate.query(sql, userRowMapper(), since, until);
         } else {
-            sql +=" ORDER BY updateDate DESC";
+            sql +=" ORDER BY update_date DESC";
             return jdbcTemplate.query(sql, userRowMapper());
         }
     }
@@ -62,12 +62,12 @@ public class JdbcTemplateUserRepository implements UserRepository{
             @Override
             public UserResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new UserResponseDto(
-                        rs.getInt("userId"),
-                        rs.getString("loginId"),
+                        rs.getInt("user_id"),
+                        rs.getString("login_id"),
                         rs.getString("email"),
                         rs.getString("nickname"),
-                        rs.getTimestamp("createDate").toLocalDateTime(),
-                        rs.getTimestamp("updateDate").toLocalDateTime()
+                        rs.getTimestamp("create_date").toLocalDateTime(),
+                        rs.getTimestamp("update_date").toLocalDateTime()
                 );
             }
         };
@@ -75,19 +75,19 @@ public class JdbcTemplateUserRepository implements UserRepository{
 
     @Override
     public Optional<UserResponseDto> findUser(int userId) {
-        String sql = "SELECT * FROM users WHERE userId = ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM users WHERE user_id = ? ORDER BY update_date DESC";
         return jdbcTemplate.query(sql, userRowMapper(), userId).stream().findAny();
     }
 
     @Override
     public Optional<UserResponseDto> findUser(String loginId) {
-        String sql = "SELECT * FROM users WHERE loginId = ? ORDER BY updateDate DESC";
+        String sql = "SELECT * FROM users WHERE login_id = ? ORDER BY update_date DESC";
         return jdbcTemplate.query(sql, userRowMapper(), loginId).stream().findAny();
     }
 
     @Override
     public Optional<UserResponseDto> modifyUserLoginId(ModifyUserLoginIdDto modifyUserLoginIdDto) {
-        String sql = "UPDATE users SET loginId = ? WHERE loginId = ?";
+        String sql = "UPDATE users SET login_id = ? WHERE login_id = ?";
         jdbcTemplate.update(sql,
                 modifyUserLoginIdDto.getNewLoginId(),
                 modifyUserLoginIdDto.getTempLoginId());
@@ -96,7 +96,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
 
     @Override
     public Optional<UserResponseDto> modifyUserInfo(ModifyUserInfoDto modifyUserInfoDto) {
-        String sql = "UPDATE users SET nickname = ?, email = ? WHERE loginId = ?";
+        String sql = "UPDATE users SET nickname = ?, email = ? WHERE login_id = ?";
         jdbcTemplate.update(sql,
                 modifyUserInfoDto.getNickname(),
                 modifyUserInfoDto.getEmail(),
@@ -106,7 +106,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
 
     @Override
     public Optional<UserResponseDto> modifyUserPassword(ModifyUserPasswordDto modifyUserPasswordDto) {
-        String sql = "UPDATE users SET password = ? WHERE loginId = ?";
+        String sql = "UPDATE users SET password = ? WHERE login_id = ?";
         jdbcTemplate.update(sql,
                 modifyUserPasswordDto.getNewPassword(),
                 modifyUserPasswordDto.getLoginId());
@@ -116,20 +116,20 @@ public class JdbcTemplateUserRepository implements UserRepository{
     // 유저 존재 여부 반환
     @Override
     public boolean existsByLoginId(String loginId) {
-        String sql = "SELECT exists(SELECT * FROM users WHERE loginId = ?)";
+        String sql = "SELECT exists(SELECT * FROM users WHERE login_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, loginId));
     }
 
     @Override
     public boolean existsByUserId(int userId) {
-        String sql = "SELECT exists(SELECT * FROM users WHERE userId = ?)";
+        String sql = "SELECT exists(SELECT * FROM users WHERE user_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, userId));
     }
 
     // 비밀번호 검증
     @Override
     public boolean validatePassword(String loginId, String password) {
-        String sql = "SELECT password FROM users WHERE loginId = ?";
+        String sql = "SELECT password FROM users WHERE login_id = ?";
         List<User> user = jdbcTemplate.query(sql, userPasswordRowMapper(), loginId);
         if (user.isEmpty()) return false;
         return user.get(0).getPassword().equals(password);
@@ -137,7 +137,7 @@ public class JdbcTemplateUserRepository implements UserRepository{
 
     @Override
     public boolean deleteUser(DeleteUserDto deleteUserDto) {
-        String sql = "DELETE FROM users WHERE loginId = ?";
+        String sql = "DELETE FROM users WHERE login_id = ?";
         int result = jdbcTemplate.update(sql, deleteUserDto.getLoginId());
         if(result == 0) throw new ScheduleFindException("존재하지 않는 일정입니다.");
         return result > 0;

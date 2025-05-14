@@ -31,14 +31,14 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         LocalDateTime nowDateTime = LocalDateTime.now();
         // 문자열을 작성하지 않고 insert 가능
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("scheduleId");
+        jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("schedule_id");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("userId", userId);
+        parameters.put("user_id", userId);
         parameters.put("title", schedule.getTitle());
         parameters.put("contents", schedule.getContents());
-        parameters.put("createDate", nowDateTime);
-        parameters.put("updateDate", nowDateTime);
+        parameters.put("create_date", nowDateTime);
+        parameters.put("update_date", nowDateTime);
 
         // 식별자 auto increment
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
@@ -49,11 +49,11 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     @Override
     public PageResponseDto<ScheduleResponseDto> findAllSchedules(PageRequestDto pageRequestDto) {
         // join을 사용하여 유저의 닉네임까지 같이 출력하도록 함
-        String sql = "select * from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC LIMIT ?, ?";
+        String sql = "select * from schedule s JOIN users u on s.user_id = u.user_id ORDER BY s.update_date DESC LIMIT ?, ?";
         List<ScheduleResponseDto> schedules = jdbcTemplate.query(sql, scheduleRowMapper(), pageRequestDto.getOffset(), pageRequestDto.getSize());
 
         // 총 일정 수
-        int totalSchedules = jdbcTemplate.queryForObject("select COUNT(*) from schedule s JOIN users u on s.userId = u.userId ORDER BY s.updateDate DESC", Integer.class);
+        int totalSchedules = jdbcTemplate.queryForObject("select COUNT(*) from schedule s JOIN users u on s.user_id = u.user_id ORDER BY s.update_date DESC", Integer.class);
         // 가능한 총 페이지 수
         int totalPages = totalSchedules / pageRequestDto.getSize() + (totalSchedules % pageRequestDto.getSize() > 0? 1 : 0);
         PageResponseDto.PageInfo pageInfo = new PageResponseDto.PageInfo(
@@ -68,7 +68,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
     @Override
     public Optional<ScheduleResponseDto> findOneSchedule(int schedule_id) {
-        String sql = "SELECT * FROM schedule s JOIN users u on s.userId = u.userId WHERE s.scheduleId = ?";
+        String sql = "SELECT * FROM schedule s JOIN users u on s.user_id = u.user_id WHERE s.schedule_id = ?";
         return jdbcTemplate.query(sql, scheduleRowMapper(), schedule_id).stream().findAny();
     }
 
@@ -78,7 +78,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         String sql = "UPDATE schedule SET "
                 + "title = CASE WHEN ? = '' THEN title ELSE ? END, "
                 + "contents = CASE WHEN ? = '' THEN contents ELSE ? END, "
-                + "updateDate = ? WHERE scheduleId = ?";
+                + "update_date = ? WHERE schedule_id = ?";
         jdbcTemplate.update(sql,
                 modifyScheduleDto.getScheduleData().getTitle(),
                 modifyScheduleDto.getScheduleData().getTitle(),
@@ -102,12 +102,12 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
             @Override
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new ScheduleResponseDto(
-                        rs.getInt("scheduleId"),
+                        rs.getInt("schedule_id"),
                         rs.getString("nickname"),
                         rs.getString("title"),
                         rs.getString("contents"),
-                        rs.getTimestamp("createDate").toLocalDateTime(),
-                        rs.getTimestamp("updateDate").toLocalDateTime()
+                        rs.getTimestamp("create_date").toLocalDateTime(),
+                        rs.getTimestamp("update_date").toLocalDateTime()
                 );
             }
         };
